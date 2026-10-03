@@ -1,0 +1,24 @@
+{
+  "name": "vibe-knowledge-video-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A cinematic, deterministic Remotion foundation for visual knowledge videos.",
+  "scripts": {
+    "dev": "remotion studio src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "render:task001": "remotion render src/index.ts Task001Foundation output/task001-foundation.mp4 --codec h264 --crf 18"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.532",
+    "@remotion/google-fonts": "4.0.532",
+    "@remotion/renderer": "4.0.532",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "remotion": "4.0.532"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.7",
+    "typescript": "5.9.2"
+  }
+}
