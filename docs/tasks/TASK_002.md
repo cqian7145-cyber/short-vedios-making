@@ -29,7 +29,7 @@ Near-black/deep navy atmosphere, warm ivory typography, restrained gold signals,
 - [x] `docs/VISUAL_LANGUAGE.md` and this task record are complete.
 - [x] `npm install`, `npm run typecheck`, `npm run render:task001`, and `npm run render:task002` succeed.
 - [x] `output/task002-visual-system.mp4` exists with 1920×1080, 30 fps, 30 seconds, and no audio.
-- [ ] Changes are committed to the requested message and pushed to `origin/main`.
+- [x] Changes are committed to the requested message and pushed to `origin/main`.
 
 ## Evidence
 
@@ -46,4 +46,7 @@ Commands and results:
 - A source scan found no runtime uses of `Math.random`, `Date.now`, `setTimeout`, or `setInterval`, and no audio or API integration in this task.
 - Temporary review stills were kept under ignored `output/` during review and removed before commit.
 
-Git commit SHA and push result will be recorded after the requested commit and push.
+Git delivery:
+
+- Feature commit: `ab3c6d8d66f59af0c36e4ea10b06ad557adf7418` (`feat: complete Task 002 visual design system`).
+- `git push origin main` — succeeded; `main` was pushed to the configured GitHub remote.
