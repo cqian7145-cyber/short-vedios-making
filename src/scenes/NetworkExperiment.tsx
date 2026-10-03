@@ -22,17 +22,17 @@ export const NetworkExperiment: React.FC = () => {
     if(frame<start) return null;
     const t=((frame-start)*speed/170+index*.23)%1;
     const [cx,cy]=pointOnRoute(route,t);
-    return <circle key={`${route}-${index}`} cx={cx} cy={cy} r={index%3===0?3:2} fill={index%4===0?vibeTheme.colors.ivory:vibeTheme.colors.gold} opacity={.72} style={{filter:'drop-shadow(0 0 5px rgba(217,182,110,.65))'}}/>;
+    return <circle key={`${route}-${index}`} cx={cx} cy={cy} r={index%3===0?3:2} fill={index%4===0?vibeTheme.colors.text.primary:vibeTheme.colors.accent.gold} opacity={.72} style={{filter:'drop-shadow(0 0 5px rgba(217,182,110,.65))'}}/>;
   };
   return <AbsoluteFill style={{opacity:fade,transform:`scale(${scale}) translateX(195px)`,transformOrigin:'58% 48%'}}>
     <svg width="100%" height="100%" viewBox="0 0 1920 1080" style={{overflow:'visible'}}>
       <g transform="translate(475 285)">
-        {basePaths.map((d,i)=><g key={i}><GlowPath d={d} start={204+i*9} end={250+i*9} color={vibeTheme.colors.mutedGold} width={1.4} opacity={.8}/></g>)}
-        <g opacity={complexity}><GlowPath d={allPaths[4]} start={282} end={336} color={vibeTheme.colors.gold} width={2.2} opacity={.78}/></g>
+        {basePaths.map((d,i)=><g key={i}><GlowPath d={d} start={204+i*9} end={250+i*9} color={vibeTheme.colors.accent.mutedGold} width={vibeTheme.lineWidths.thin} opacity={.8}/></g>)}
+        <g opacity={complexity}><GlowPath d={allPaths[4]} start={282} end={336} color={vibeTheme.colors.accent.gold} width={vibeTheme.lineWidths.emphasis} opacity={.78}/></g>
         {edges.map((_,i)=>traffic(i,i,252+i*11,52))}
         {Array.from({length:7},(_,i)=>traffic(4,i,306+i*4,106))}
-        <g opacity={complexity}><circle cx="525" cy="285" r="34" fill="none" stroke={vibeTheme.colors.mutedRed} strokeWidth="1" opacity=".3"/><circle cx="525" cy="285" r="52" fill="none" stroke={vibeTheme.colors.mutedRed} strokeWidth=".7" opacity=".16"/><circle cx="525" cy="285" r="4" fill={vibeTheme.colors.mutedRed}/></g>
-        {pts.map((p,i)=><g key={i}><circle cx={p[0]} cy={p[1]} r="15" fill="rgba(217,182,110,.04)" stroke="rgba(217,182,110,.55)" strokeWidth="1.2"/><circle cx={p[0]} cy={p[1]} r="3.3" fill={vibeTheme.colors.ivory} opacity=".88"/><text x={p[0]} y={p[1]+36} fill="rgba(240,235,221,.38)" fontSize="12" letterSpacing="3" textAnchor="middle" fontFamily={vibeTheme.fonts.body}>{String.fromCharCode(65+i)}</text></g>)}
+        <g opacity={complexity}><circle cx="525" cy="285" r="34" fill="none" stroke={vibeTheme.colors.accent.red} strokeWidth={vibeTheme.lineWidths.hairline} opacity=".3"/><circle cx="525" cy="285" r="52" fill="none" stroke={vibeTheme.colors.accent.red} strokeWidth={vibeTheme.lineWidths.hairline} opacity=".16"/><circle cx="525" cy="285" r="4" fill={vibeTheme.colors.accent.red}/></g>
+        {pts.map((p,i)=><g key={i}><circle cx={p[0]} cy={p[1]} r="15" fill="rgba(217,182,110,.04)" stroke="rgba(217,182,110,.55)" strokeWidth={vibeTheme.lineWidths.thin}/><circle cx={p[0]} cy={p[1]} r="3.3" fill={vibeTheme.colors.text.primary} opacity=".88"/><text x={p[0]} y={p[1]+36} fill={vibeTheme.colors.text.muted} fontSize={vibeTheme.typography.size.numeric} letterSpacing="3" textAnchor="middle" fontFamily={vibeTheme.typography.family.body}>{String.fromCharCode(65+i)}</text></g>)}
       </g>
     </svg>
   </AbsoluteFill>;
