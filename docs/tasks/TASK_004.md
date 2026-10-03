@@ -31,7 +31,7 @@ The story moves from a two-route network to an added shortcut. Deterministic rou
 - [x] Remotion Studio is running and lists Task004SceneEngine.
 - [x] Task 001–004 compositions render successfully.
 - [x] Task004 output and requested visual review frames verified.
-- [ ] Git diff checked, commit created, and push to `origin/main` confirmed.
+- [x] Git diff checked, feature commit created, and push to `origin/main` confirmed.
 
 ## Evidence
 
@@ -49,4 +49,4 @@ The story moves from a two-route network to an added shortcut. Deterministic rou
 
 ### Git
 
-Commit and push status will be recorded after they complete.
+Feature commit: `283d0610fd321e2f2a42cf1a89a017cc5cd56653` (`feat: complete Task 004 scene engine`). `git push origin main` succeeded and updated `origin/main` from `0a283ca` to `283d061`.
