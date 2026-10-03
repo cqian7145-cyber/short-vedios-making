@@ -27,7 +27,7 @@ The entry point registers one `Task001Foundation` composition. `vibeTheme` owns 
 - [x] `npm run render:task001` succeeds and produces `output/task001-foundation.mp4`.
 - [x] Repeated render of frame 330 produces an identical SHA-256.
 - [x] Git diff reviewed; dependency folders, previews, and output video are ignored.
-- [ ] Commit and push to `main` (record below after completion).
+- [x] Commit created and pushed to `origin/main`.
 
 ## Evidence
 
@@ -38,4 +38,4 @@ The entry point registers one `Task001Foundation` composition. `vibeTheme` owns 
 - Remotion media metadata — 1920×1080, 30 fps, 20 seconds, H.264, `audioCodec: null`.
 - Determinism — two frame-330 still renders both had SHA-256 `B1C9D7A6E7CD3FABA48E39A7D9B7DBA1F5782005C312B6036598350E69770AFB`.
 - MP4: `D:\short-vedios-making\output\task001-foundation.mp4` (kept local and excluded from Git by `.gitignore`).
-- Commit/push: pending.
+- Git delivery — `b4297a5` (`feat: complete Task 001 video engine foundation`) pushed successfully to `origin/main`; the evidence update is committed separately.
