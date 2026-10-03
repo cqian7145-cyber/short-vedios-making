@@ -35,7 +35,7 @@ See [COMPONENT_LIBRARY.md](../COMPONENT_LIBRARY.md) for purpose, props, examples
 - [x] `npm install`, `npm run typecheck`, and all three render scripts succeed.
 - [x] Task 003 output metadata is 1920×1080, 30 FPS, 45 seconds, with no audio.
 - [x] Frames 150, 390, 650, 900, and 1150 are visually reviewed and temporary stills are removed.
-- [ ] The requested feature commit is pushed to `origin/main`.
+- [x] The requested feature commit is pushed to `origin/main`.
 
 ## Evidence
 
@@ -53,4 +53,7 @@ Validation evidence:
 - A source scan found no uses of `Math.random`, `Date.now`, `setTimeout`, `setInterval`, `fetch`, audio components, or service integrations under `src/components`, `src/scenes`, `src/compositions`, or `src/utils`.
 - Temporary review stills were removed. Rendered MP4s remain local under ignored `output/` and are excluded from Git.
 
-Git commit and push result will be recorded after delivery.
+Git delivery:
+
+- Feature commit: `64c4774fd0b82e6e96b02712a8987fcee1b6f61a` (`feat: complete Task 003 animation component library`).
+- `git push origin main` — succeeded; the feature commit was pushed to the configured GitHub remote.
