@@ -16,7 +16,7 @@ Node.js and npm. Install dependencies with `npm install`.
 
 ## Development
 
-Run `npm run dev` to open Remotion Studio. It includes `Task001Foundation`, `Task002VisualSystem`, and `Task003ComponentGallery`.
+Run `npm run dev` to open Remotion Studio. It includes `Task001Foundation`, `Task002VisualSystem`, `Task003ComponentGallery`, and `Task004SceneEngine`.
 
 Run `npm run typecheck` to typecheck the project.
 
@@ -26,4 +26,7 @@ Run `npm run render:task002` to render the 1920×1080, 30 FPS, 900-frame composi
 
 Run `npm run render:task003` to render the 1920×1080, 30 FPS, 1350-frame component gallery. The output is `output/task003-component-gallery.mp4`.
 
+Run `npm run render:task004` to render the 1920×1080, 30 FPS, 1800-frame (60-second) scene-engine demo. The output is `output/task004-scene-engine.mp4`.
+
 Read [docs/COMPONENT_LIBRARY.md](docs/COMPONENT_LIBRARY.md) for the reusable component API, props, examples, and visual rules.
+Read [docs/SCENE_ENGINE.md](docs/SCENE_ENGINE.md) for episode configuration, timeline transitions, scene registry, and subtitle behavior.
