@@ -1,9 +1,23 @@
 import React from 'react';
-import {interpolate, useCurrentFrame} from 'remotion';
-import {vibeTheme} from '../themes/vibeTheme';
+import {AnimatedEdge} from './diagram/Edge';
 
-export const GlowPath: React.FC<{d: string; start: number; end: number; color?: string; width?: number; opacity?: number}> = ({d, start, end, color = vibeTheme.colors.accent.gold, width = vibeTheme.lineWidths.regular, opacity = 1}) => {
-  const frame = useCurrentFrame();
-  const progress = interpolate(frame, [start, end], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  return <path d={d} fill="none" stroke={color} strokeWidth={width} strokeLinecap="round" strokeDasharray="1" strokeDashoffset={1 - progress} pathLength={1} opacity={opacity * progress} style={{filter: `drop-shadow(0 0 5px ${color}55)`}} />;
+export type GlowPathProps = {
+  d: string;
+  startFrame?: number;
+  duration?: number;
+  /** @deprecated Use startFrame. Kept for Task 001/002 source compatibility. */
+  start?: number;
+  /** @deprecated Use duration with startFrame. */
+  end?: number;
+  color?: string;
+  width?: number;
+  opacity?: number;
+  direction?: 'forward' | 'reverse';
+  progress?: number;
+};
+
+export const GlowPath: React.FC<GlowPathProps> = ({d, startFrame, duration, start, end, color, width, opacity, direction, progress}) => {
+  const resolvedStart = startFrame ?? start ?? 0;
+  const resolvedDuration = duration ?? (end === undefined ? 36 : Math.max(1, end - resolvedStart));
+  return <AnimatedEdge path={d} startFrame={resolvedStart} duration={resolvedDuration} color={color} width={width} opacity={opacity} direction={direction} progress={progress} glow />;
 };

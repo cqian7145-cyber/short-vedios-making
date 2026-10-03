@@ -7,7 +7,8 @@
     "dev": "remotion studio src/index.ts",
     "typecheck": "tsc --noEmit",
     "render:task001": "remotion render src/index.ts Task001Foundation output/task001-foundation.mp4 --codec h264 --crf 18",
-    "render:task002": "remotion render src/index.ts Task002VisualSystem output/task002-visual-system.mp4 --codec h264 --crf 18"
+    "render:task002": "remotion render src/index.ts Task002VisualSystem output/task002-visual-system.mp4 --codec h264 --crf 18",
+    "render:task003": "remotion render src/index.ts Task003ComponentGallery output/task003-component-gallery.mp4 --codec h264 --crf 18"
   },
   "dependencies": {
     "@remotion/cli": "4.0.532",
