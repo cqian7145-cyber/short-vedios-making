@@ -6,7 +6,7 @@ Add an optional topic-to-draft episode generator while keeping Task 005's local 
 
 ## Architecture
 
-`topic/user sources → ContentBriefSchema → content-director-v1 → EpisodeSchema JSON → local validation/normalization → up to two repairs → saved draft → optional Task005 renderer`
+`topic/user sources → ContentBriefSchema → content-director-v1 → local validation → up to two ContentBrief repairs → EpisodeSchema JSON → local validation/normalization → up to two episode repairs → saved draft → optional Task005 renderer`
 
 `LLMProvider` is the provider boundary. `DeepSeekProvider` implements it with the OpenAI Node SDK and DeepSeek Responses API. `MockLLMProvider` makes the pipeline tests independent from a paid account. The prompts are versioned Markdown files rather than embedded prompt strings.
 
@@ -14,7 +14,7 @@ Add an optional topic-to-draft episode generator while keeping Task 005's local 
 
 `ContentBriefSchema` contains the story question, intuition, result, mechanism, metaphor, ending, suggested six-to-twelve-scene flow, and risk flags. The episode stage uses JSON Schema generated from Task 005 `EpisodeSchema`, then the same local `normalizeEpisode()` remains authoritative for strict structural, semantic reference, duration and transition checks. Generated episodes are additionally required to contain six to twelve scenes.
 
-The repair loop has a hard cap of two. API retry is separate: at most two retries for transient timeouts/network issues, HTTP 408/429, or 5xx. Key/model configuration, raw errors, partial JSON, and empty model output are handled before any render.
+ContentBrief and Episode each have a separate repair loop capped at two. The report fields `briefValidationAttempts` and `briefRepairAttempts` count only ContentBrief checks and repairs; the existing `validationAttempts` and `repairAttempts` count only Episode checks and repairs. Brief validation errors are formatted concisely before being sent to `repair-content-brief-v1`. API retry is separate: at most two retries for transient timeouts/network issues, HTTP 408/429, or 5xx. Key/model configuration, raw errors, partial JSON, and empty model output are handled before any render.
 
 ## CLI
 
@@ -39,9 +39,9 @@ There is no search provider. The content prompt treats topic, brief and facts as
 | Task001–005 preserved | Existing compositions and Task005 examples/tests remain; Task005 typecheck/tests passed. Braess JSON was rendered after Task006 implementation as regression. |
 | DeepSeek Responses API + JSON Schema | Implemented with exact base URL and models `deepseek-flash` / `deepseek-v4-pro`; real request not made because the environment had no key. |
 | Provider interface + mock | `LLMProvider`, `DeepSeekProvider`, and fixture-based `MockLLMProvider` implemented. |
-| Content brief and prompts | `ContentBriefSchema` plus three versioned prompt files created. |
+| Content brief and prompts | `ContentBriefSchema` plus four versioned prompt files; ContentBrief lengths are reinforced in the director prompt and invalid briefs receive at most two local-validation repairs. |
 | Local episode validation | Task 005 `normalizeEpisode()` runs before generated output is declared validated or renderable. |
-| Bounded repair and API retry | Two repair attempts; two network retries, covered by tests. |
+| Bounded repair and API retry | ContentBrief and Episode each allow two repairs with independent report counters; two network retries. |
 | CLI, dry-run, force, artifacts | `generate:episode`, `make:episode`, no-overwrite check, report and artifact output implemented and tested through mock service/parser paths. |
 | Research warnings | Risk flags are persisted and printed; tests check flagged claims. No research is performed. |
 | API key handling | Environment-only config, redaction, missing-key test and CLI check verified. `.env` and `.env.*` are ignored, with `.env.example` allowed. |

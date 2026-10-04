@@ -4,7 +4,7 @@ Task 006 adds an optional drafting pipeline:
 
 ```text
 topic + user brief/facts
-    → Content Director → validated ContentBrief JSON
+    → Content Director → ContentBrief JSON → local validation → at most two brief repairs
     → Episode Director → Episode JSON → Task 005 local validation
     → at most two validation repairs → validated draft episode
     → optional Remotion render
@@ -22,7 +22,7 @@ DeepSeek documents the Responses API and JSON Schema output in its [Responses AP
 
 ## Content stages and research boundary
 
-The first structured request returns `ContentBriefSchema`: topic, central question, usual intuition, counterintuitive result, mechanism, visual metaphor, ending insight, six to twelve suggested scenes, and research risk flags. `content-director-v1` creates this concept plan only; it does not return an episode.
+The first structured request returns `ContentBriefSchema`: topic, central question, usual intuition, counterintuitive result, mechanism, visual metaphor, ending insight, six to twelve suggested scenes, and research risk flags. `content-director-v1` creates this concept plan only; it does not return an episode. The result is validated locally. On validation failure, concise field errors are sent with `repair-content-brief-v1` for at most two repair attempts; the brief is validated again each time. The schema limits remain authoritative. The director prompt asks for a visual metaphor of 250 characters or fewer where possible and never over 400, concise field copy, one short mechanism idea per item, and no paragraph-length values.
 
 The second request receives the brief and the strict Task 005 Episode JSON Schema. `episode-director-v1` maps the plan to six to twelve existing scenes. A local conversion pins the requested episode ID and adds English/topic metadata, then `normalizeEpisode()` runs the actual Task 005 schema, reference and duration checks. Unsupported scene types and references do not reach rendering.
 
@@ -32,7 +32,7 @@ There is no narration field, TTS, voice-over, audio, music, or YouTube upload in
 
 ## Repair, files, duration, and overwrite safety
 
-If episode JSON fails parsing, Task 005 structure validation, reference validation, or the six-to-twelve scene-count check, `repair-episode-v1` receives the original output and the latest concise local error. It is called at most twice. Each result is revalidated. If it still fails, the command exits nonzero and writes a failed report; it never enters an unbounded repair loop.
+If brief JSON fails parsing or `ContentBriefSchema`, `repair-content-brief-v1` receives the current output and concise local validation errors. It is called at most twice; exhaustion exits nonzero and writes a failed report without starting Episode generation. If episode JSON fails parsing, Task 005 structure validation, reference validation, or the six-to-twelve scene-count check, `repair-episode-v1` receives the original output and the latest concise local error. It is called at most twice. Each result is revalidated. If it still fails, the command exits nonzero and writes a failed report; it never enters an unbounded repair loop.
 
 For `--id choice-overload`, generation saves:
 
@@ -42,7 +42,7 @@ For `--id choice-overload`, generation saves:
 - `generated/choice-overload/generation-report.json`
 - `episodes/generated/choice-overload.json`
 
-The report records model and prompt versions, target and actual normalized duration, scene count, validation and repair counts, risk status, and token usage when the API returns it. It never contains API keys or Authorization headers. `generated/` is local and ignored by Git; episodes explicitly generated for review can be committed separately after key/secret checks.
+The report records model and prompt versions, target and actual normalized duration, scene count, risk status, and token usage when the API returns it. `briefValidationAttempts` and `briefRepairAttempts` count only ContentBrief validation/repairs; the existing `validationAttempts` and `repairAttempts` count only Episode validation/repairs. It never contains API keys or Authorization headers. `generated/` is local and ignored by Git; episodes explicitly generated for review can be committed separately after key/secret checks.
 
 The default target is 150 seconds. `--duration` accepts 30–600 seconds for shorter integration drafts as well as long episodes. The measured timeline includes scene overlaps; the CLI warns when it differs from the target by more than 15 seconds. The output is not silently stretched to fit.
 
@@ -73,4 +73,4 @@ npm run test:episodes
 npm run test:ai
 ```
 
-The `MockLLMProvider` reads `tests/fixtures/` and checks successful generation, local validation, one repair, the two-repair cap, overwrite refusal/`--force`, key/model configuration, bounded network retry and credential redaction. These tests do not call DeepSeek. The real API smoke test runs only when a key is present and the user explicitly runs generation; this workstation had no `DEEPSEEK_API_KEY`, so no real request or paid test was made for Task 006.
+The `MockLLMProvider` reads `tests/fixtures/` and checks successful generation, ContentBrief repair after an overlong field, its two-repair cap and independent counters, episode validation/repair, overwrite refusal/`--force`, key/model configuration, bounded network retry and credential redaction. These tests do not call DeepSeek. The real API smoke test runs only when a key is present and the user explicitly runs generation; no real request or paid test is made by these unit tests.

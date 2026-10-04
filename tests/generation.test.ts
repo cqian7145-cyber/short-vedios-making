@@ -9,7 +9,7 @@ import {ContentBriefSchema} from '../src/ai/contentBriefSchema';
 import {resolveDeepSeekConfig} from '../src/ai/deepseek/config';
 import {DeepSeekProvider} from '../src/ai/deepseek/DeepSeekProvider';
 import {generateEpisode, researchWarnings} from '../src/ai/pipeline';
-import {MAX_REPAIR_ATTEMPTS} from '../src/ai/generationConfig';
+import {MAX_BRIEF_REPAIR_ATTEMPTS, MAX_REPAIR_ATTEMPTS} from '../src/ai/generationConfig';
 import {parseGenerationArgs} from '../scripts/generation-cli';
 
 const fixtureDir = path.resolve('tests/fixtures');
@@ -17,8 +17,8 @@ const briefJson = readFileSync(path.join(fixtureDir, 'content-brief.json'), 'utf
 const episodeJson = readFileSync(path.join(fixtureDir, 'generated-episode.json'), 'utf8');
 const invalidEpisodeJson = readFileSync(path.join(fixtureDir, 'invalid-episode.json'), 'utf8');
 
-const makeProvider = (episodeResponses = [episodeJson]) => new MockLLMProvider({
-  content_brief_v1: [briefJson],
+const makeProvider = (episodeResponses = [episodeJson], briefResponses = [briefJson]) => new MockLLMProvider({
+  content_brief_v1: [...briefResponses],
   episode_v1: [...episodeResponses],
 });
 
@@ -65,6 +65,8 @@ test('mock provider generates a validated episode and saves artifacts without AP
   assert.equal(result.report.sceneCount, 7);
   assert.equal(result.report.validationAttempts, 1);
   assert.equal(result.report.repairAttempts, 0);
+  assert.equal(result.report.briefValidationAttempts, 1);
+  assert.equal(result.report.briefRepairAttempts, 0);
   assert.equal(result.report.needsResearch, true);
   assert.equal(result.report.tokenUsage.totalTokens, 64);
   assert.deepEqual(provider.calls.map((call) => call.schemaName), ['content_brief_v1', 'episode_v1']);
@@ -79,7 +81,50 @@ test('invalid episode is repaired with bounded, path-specific feedback', async (
   const result = await generateEpisode(options(), provider, roots);
   assert.equal(result.report.validationAttempts, 2);
   assert.equal(result.report.repairAttempts, 1);
+  assert.equal(result.report.briefValidationAttempts, 1);
+  assert.equal(result.report.briefRepairAttempts, 0);
   assert.match(provider.calls[2].input, /scenes\[0\]\.type/);
+});
+
+test('overlong ContentBrief is repaired locally before episode generation', async (t) => {
+  const roots = await makeRoots(t);
+  const invalidBrief = JSON.parse(briefJson) as Record<string, unknown>;
+  invalidBrief.visualMetaphor = 'x'.repeat(527);
+  const provider = makeProvider([episodeJson], [JSON.stringify(invalidBrief), briefJson]);
+  const result = await generateEpisode(options(), provider, roots);
+
+  assert.equal(result.report.briefValidationAttempts, 2);
+  assert.equal(result.report.briefRepairAttempts, 1);
+  assert.equal(result.report.validationAttempts, 1);
+  assert.equal(result.report.repairAttempts, 0);
+  assert.deepEqual(provider.calls.map((call) => call.schemaName), ['content_brief_v1', 'content_brief_v1', 'episode_v1']);
+  assert.match(provider.calls[1].input, /visualMetaphor: maximum 400 characters; received 527/);
+  assert.equal(provider.calls[1].instructions.includes('Fix only schema/validation violations'), true);
+  assert.equal(result.brief.visualMetaphor.length <= 400, true);
+});
+
+test('ContentBrief repair stops after exactly two repairs and writes separate failed counters', async (t) => {
+  const roots = await makeRoots(t);
+  const invalidBrief = JSON.parse(briefJson) as Record<string, unknown>;
+  invalidBrief.visualMetaphor = 'x'.repeat(527);
+  const provider = makeProvider([episodeJson], [JSON.stringify(invalidBrief), JSON.stringify(invalidBrief), JSON.stringify(invalidBrief)]);
+
+  await assert.rejects(generateEpisode(options(), provider, roots), (error: unknown) => {
+    assert.ok(error instanceof Error);
+    assert.match(error.message, /ContentBrief validation failed after 3 attempt\(s\)/);
+    assert.match(error.message, /visualMetaphor: maximum 400 characters; received 527/);
+    assert.doesNotMatch(error.message, /"code"\s*:\s*"too_big"/);
+    return true;
+  });
+  assert.equal(MAX_BRIEF_REPAIR_ATTEMPTS, 2);
+  assert.equal(provider.calls.length, 3);
+  assert.deepEqual(provider.calls.map((call) => call.schemaName), ['content_brief_v1', 'content_brief_v1', 'content_brief_v1']);
+  const report = JSON.parse(await readFile(path.join(roots.generatedRoot!, 'choice-overload', 'generation-report.json'), 'utf8')) as Record<string, unknown>;
+  assert.equal(report.briefValidationAttempts, 3);
+  assert.equal(report.briefRepairAttempts, 2);
+  assert.equal(report.validationAttempts, 0);
+  assert.equal(report.repairAttempts, 0);
+  assert.equal(report.status, 'failed');
 });
 
 test('episode repair loop stops after exactly two repairs', async (t) => {
