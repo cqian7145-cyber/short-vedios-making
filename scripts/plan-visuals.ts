@@ -49,7 +49,11 @@ async function run(): Promise<void> {
     writeFile(reportPath, `${JSON.stringify(result.diversity, null, 2)}\n`, 'utf8'),
   ]);
   console.log(`VisualPlan: ${planPath}`);
-  console.log(`Diversity score: ${result.diversity.visualDiversityScore}/100; archetypes: ${result.diversity.primaryArchetypes.join(', ')}`);
+  console.log(`Diversity score: ${result.diversity.visualDiversityScore}/100`);
+  console.log(`Archetypes: ${result.diversity.primaryArchetypes.join(', ')}`);
+  console.log(`Structural repair attempts: ${result.structuralRepairAttempts}`);
+  const fallbacks = result.plan.scenePlans.flatMap((scene) => scene.fallbackArchetype ? [`${scene.sceneId}: ${scene.fallbackArchetype}`] : []);
+  console.log(`Fallbacks: ${fallbacks.length ? fallbacks.join(', ') : 'none'}`);
   result.diversity.warnings.forEach((warning) => console.warn(`⚠ ${warning}`));
 }
 

@@ -5,6 +5,11 @@ export const VISUAL_ARCHETYPES = [
   'timeline_archive', 'object_world', 'process_flow', 'field_wave', 'scale_comparison', 'spatial_map',
 ] as const;
 export const VisualArchetypeSchema = z.enum(VISUAL_ARCHETYPES);
+export const VISUAL_CAPABILITY_IDS = [
+  'network-stage', 'node', 'edge', 'flow-particles', 'agent-token', 'vehicle-token', 'counter', 'glow-path',
+  'highlight-ring', 'formula', 'probability-bar', 'mini-chart', 'timeline', 'arrow', 'atmospheric-particles', 'label',
+] as const;
+export const VisualCapabilityIdSchema = z.enum(VISUAL_CAPABILITY_IDS);
 export const VisualCameraIntentSchema = z.enum(['slow_push_in', 'slow_pull_back', 'drift', 'locked', 'tracking', 'reframe']);
 export const VisualScenePlanSchema = z.strictObject({
   sceneId: z.string().min(1).max(100),
@@ -16,7 +21,7 @@ export const VisualScenePlanSchema = z.strictObject({
   spatialLayout: z.string().min(1).max(300),
   continuityFromPrevious: z.string().max(400),
   reuseExistingPrimitive: z.string().min(1).max(240),
-  requiredCapabilities: z.array(z.string().regex(/^[a-z][a-z0-9-]*$/)).max(12),
+  requiredCapabilities: z.array(VisualCapabilityIdSchema).max(12),
   fallbackArchetype: VisualArchetypeSchema.optional(),
   textDominant: z.boolean(),
 });
@@ -40,6 +45,7 @@ export const VisualDiversityReportSchema = z.strictObject({
 });
 
 export type VisualArchetype = z.infer<typeof VisualArchetypeSchema>;
+export type VisualCapabilityId = z.infer<typeof VisualCapabilityIdSchema>;
 export type VisualScenePlan = z.infer<typeof VisualScenePlanSchema>;
 export type VisualPlan = z.infer<typeof VisualPlanSchema>;
 export type VisualDiversityReport = z.infer<typeof VisualDiversityReportSchema>;

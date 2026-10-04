@@ -36,11 +36,9 @@ export function auditVisualPlan(planInput: VisualPlan, episode: Episode): Visual
   if (!signatureMomentPresent) warnings.push('Add a concept-specific signature moment beyond a generic network/node glow.');
 
   for (const scene of plans) {
-    const unavailable = scene.requiredCapabilities.filter((name) => {
-      const capability = Reflect.get(visualCapabilities, name.replace(/-/g, '_'));
-      return !capability || capability.status !== 'supported';
-    });
-    if (unavailable.length && !scene.fallbackArchetype) warnings.push(`${scene.sceneId} requests limited/unsupported capabilities (${unavailable.join(', ')}) without a fallback archetype.`);
+    const primary = visualCapabilities[scene.primaryArchetype];
+    if (primary.status === 'limited' && !scene.fallbackArchetype) warnings.push(`${scene.sceneId} uses limited archetype ${scene.primaryArchetype} without a fallback archetype.`);
+    if (scene.fallbackArchetype && visualCapabilities[scene.fallbackArchetype].status === 'unsupported') warnings.push(`${scene.sceneId} uses unsupported fallback archetype ${scene.fallbackArchetype}.`);
   }
 
   let score = Math.min(5, archetypes.length) * 12 + (signatureMomentPresent ? 20 : 0);
