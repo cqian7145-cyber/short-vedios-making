@@ -198,6 +198,114 @@ test('network retries stop after two retries', async () => {
   assert.deepEqual(waits, [700, 1400]);
 });
 
+const deepSeekResponse = (status: 'completed' | 'incomplete', reason: string | null = null) => ({
+  id: 'response-test', object: 'response', created_at: 1, status, model: 'deepseek-flash',
+  output: [{id: 'message-test', type: 'message', status, role: 'assistant', content: [{type: 'output_text', text: '{"ok":true}'}]}],
+  usage: {input_tokens: 2, output_tokens: 3, total_tokens: 5, input_tokens_details: {cached_tokens: 0}, output_tokens_details: {reasoning_tokens: 0}},
+  error: null, incomplete_details: reason ? {reason} : null, store: false, parallel_tool_calls: true, previous_response_id: null,
+});
+
+const structuredRequest = (maxOutputTokens = 50) => ({
+  schemaName: 'fixture', schema: {type: 'object'}, instructions: 'JSON only', input: 'fixture', maxOutputTokens,
+});
+
+test('DeepSeek retries max_output_tokens once with a doubled output budget', async () => {
+  let calls = 0;
+  const budgets: number[] = [];
+  const provider = new DeepSeekProvider({apiKey: 'unit-test-secret', model: 'deepseek-flash'}, {
+    baseURL: 'https://deepseek.test',
+    fetch: async (_url, init) => {
+      calls += 1;
+      budgets.push((JSON.parse(String(init?.body)) as {max_output_tokens: number}).max_output_tokens);
+      const result = calls === 1 ? deepSeekResponse('incomplete', 'max_output_tokens') : deepSeekResponse('completed');
+      return new Response(JSON.stringify(result), {status: 200, headers: {'content-type': 'application/json'}});
+    },
+    sleep: async () => assert.fail('output-token retry must not use network backoff'),
+  });
+
+  const result = await provider.generateStructured(structuredRequest());
+  assert.equal(result.text, '{"ok":true}');
+  assert.equal(calls, 2);
+  assert.deepEqual(budgets, [50, 100]);
+});
+
+test('DeepSeek output-token retry is bounded and reports initial and final budgets', async () => {
+  let calls = 0;
+  const budgets: number[] = [];
+  const secret = 'unit-test-secret';
+  const provider = new DeepSeekProvider({apiKey: secret, model: 'deepseek-flash'}, {
+    baseURL: 'https://deepseek.test',
+    fetch: async (_url, init) => {
+      calls += 1;
+      budgets.push((JSON.parse(String(init?.body)) as {max_output_tokens: number}).max_output_tokens);
+      return new Response(JSON.stringify(deepSeekResponse('incomplete', 'max_output_tokens')), {status: 200, headers: {'content-type': 'application/json'}});
+    },
+  });
+
+  await assert.rejects(provider.generateStructured(structuredRequest()), (error: unknown) => {
+    assert.ok(error instanceof Error);
+    assert.match(error.message, /exceeded token budget after 2 attempts/);
+    assert.match(error.message, /Initial budget: 50/);
+    assert.match(error.message, /Final budget: 100/);
+    assert.doesNotMatch(error.message, /unit-test-secret|Authorization|instructions|schema/);
+    return true;
+  });
+  assert.equal(calls, 2);
+  assert.deepEqual(budgets, [50, 100]);
+});
+
+test('DeepSeek output-token retry respects the 12000-token global cap', async () => {
+  let calls = 0;
+  const budgets: number[] = [];
+  const provider = new DeepSeekProvider({apiKey: 'unit-test-secret', model: 'deepseek-flash'}, {
+    baseURL: 'https://deepseek.test',
+    fetch: async (_url, init) => {
+      calls += 1;
+      budgets.push((JSON.parse(String(init?.body)) as {max_output_tokens: number}).max_output_tokens);
+      const result = calls === 1 ? deepSeekResponse('incomplete', 'max_output_tokens') : deepSeekResponse('completed');
+      return new Response(JSON.stringify(result), {status: 200, headers: {'content-type': 'application/json'}});
+    },
+  });
+  await provider.generateStructured(structuredRequest(9000));
+  assert.deepEqual(budgets, [9000, 12000]);
+});
+
+test('DeepSeek network retries and output-token retries use independent counters', async () => {
+  let calls = 0;
+  const budgets: number[] = [];
+  const waits: number[] = [];
+  const provider = new DeepSeekProvider({apiKey: 'unit-test-secret', model: 'deepseek-flash'}, {
+    baseURL: 'https://deepseek.test',
+    fetch: async (_url, init) => {
+      calls += 1;
+      budgets.push((JSON.parse(String(init?.body)) as {max_output_tokens: number}).max_output_tokens);
+      if (calls === 1) return new Response(JSON.stringify({error: {message: 'temporary unavailable'}}), {status: 429});
+      const result = calls === 2 ? deepSeekResponse('incomplete', 'max_output_tokens') : deepSeekResponse('completed');
+      return new Response(JSON.stringify(result), {status: 200, headers: {'content-type': 'application/json'}});
+    },
+    sleep: async (ms) => { waits.push(ms); },
+  });
+
+  const result = await provider.generateStructured(structuredRequest());
+  assert.equal(result.text, '{"ok":true}');
+  assert.equal(calls, 3);
+  assert.deepEqual(waits, [700]);
+  assert.deepEqual(budgets, [50, 50, 100]);
+});
+
+test('completed DeepSeek response does not trigger an extra attempt', async () => {
+  let calls = 0;
+  const provider = new DeepSeekProvider({apiKey: 'unit-test-secret', model: 'deepseek-flash'}, {
+    baseURL: 'https://deepseek.test',
+    fetch: async () => {
+      calls += 1;
+      return new Response(JSON.stringify(deepSeekResponse('completed')), {status: 200, headers: {'content-type': 'application/json'}});
+    },
+  });
+  await provider.generateStructured(structuredRequest());
+  assert.equal(calls, 1);
+});
+
 test('API authentication errors are concise and redact key-like credentials', async () => {
   const secret = 'sk-test-do-not-print';
   const fetcher: typeof fetch = async () => new Response(JSON.stringify({error: {message: `invalid key ${secret}`}}), {status: 401});

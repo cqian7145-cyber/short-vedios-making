@@ -1,2 +1,4 @@
 export const MAX_REPAIR_ATTEMPTS = 2;
 export const MAX_BRIEF_REPAIR_ATTEMPTS = 2;
+export const MAX_OUTPUT_TOKEN_RETRIES = 1;
+export const MAX_STRUCTURED_OUTPUT_TOKENS = 12_000;

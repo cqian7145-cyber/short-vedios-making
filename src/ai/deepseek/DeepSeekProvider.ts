@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 import type {LLMProvider, StructuredGenerationRequest, StructuredGenerationResult} from '../provider';
 import {MAX_NETWORK_RETRIES, DEEPSEEK_BASE_URL, type DeepSeekConfig} from './config';
+import {MAX_OUTPUT_TOKEN_RETRIES, MAX_STRUCTURED_OUTPUT_TOKENS} from '../generationConfig';
 
 const RETRY_DELAY_MS = 700;
 
@@ -40,13 +41,19 @@ export class DeepSeekProvider implements LLMProvider {
   private readonly sleep: (ms: number) => Promise<void>;
 
   async generateStructured(request: StructuredGenerationRequest): Promise<StructuredGenerationResult> {
-    for (let attempt = 0; ; attempt += 1) {
+    const initialBudget = Math.min(request.maxOutputTokens, MAX_STRUCTURED_OUTPUT_TOKENS);
+    let currentBudget = initialBudget;
+    let networkRetryCount = 0;
+    let outputTokenRetryCount = 0;
+
+    while (true) {
+      let response;
       try {
-        const response = await this.client.responses.create({
+        response = await this.client.responses.create({
           model: this.model,
           instructions: request.instructions,
           input: request.input,
-          max_output_tokens: request.maxOutputTokens,
+          max_output_tokens: currentBudget,
           reasoning: {effort: 'low'},
           text: {
             format: {
@@ -56,27 +63,43 @@ export class DeepSeekProvider implements LLMProvider {
             },
           },
         });
-        if (response.status !== 'completed') {
-          throw new Error(`DeepSeek response ended with status "${response.status}"${response.incomplete_details?.reason ? ` (${response.incomplete_details.reason})` : ''}.`);
-        }
-        const text = response.output_text;
-        if (!text.trim()) throw new Error('DeepSeek returned empty structured output.');
-        return {
-          text,
-          usage: response.usage ? {
-            inputTokens: response.usage.input_tokens,
-            outputTokens: response.usage.output_tokens,
-            totalTokens: response.usage.total_tokens,
-          } : undefined,
-        };
       } catch (error) {
-        if (attempt < MAX_NETWORK_RETRIES && isTransient(error)) {
-          await this.sleep(RETRY_DELAY_MS * (attempt + 1));
+        if (networkRetryCount < MAX_NETWORK_RETRIES && isTransient(error)) {
+          networkRetryCount += 1;
+          await this.sleep(RETRY_DELAY_MS * networkRetryCount);
           continue;
         }
         const status = error && typeof error === 'object' && 'status' in error ? ` (HTTP ${String(error.status)})` : '';
         throw new Error(`DeepSeek request failed${status}: ${safeMessage(error, this.client.apiKey ?? '')}`);
       }
+
+      if (response.status === 'incomplete' && response.incomplete_details?.reason === 'max_output_tokens') {
+        const nextBudget = Math.min(request.maxOutputTokens * 2, MAX_STRUCTURED_OUTPUT_TOKENS);
+        if (outputTokenRetryCount < MAX_OUTPUT_TOKEN_RETRIES && nextBudget > currentBudget) {
+          outputTokenRetryCount += 1;
+          currentBudget = nextBudget;
+          continue;
+        }
+        throw new Error([
+          `DeepSeek structured output exceeded token budget after ${outputTokenRetryCount + 1} attempts.`,
+          `Initial budget: ${initialBudget}`,
+          `Final budget: ${currentBudget}`,
+        ].join('\n'));
+      }
+
+      if (response.status !== 'completed') {
+        throw new Error(`DeepSeek response ended with status "${response.status}"${response.incomplete_details?.reason ? ` (${response.incomplete_details.reason})` : ''}.`);
+      }
+      const text = response.output_text;
+      if (!text.trim()) throw new Error('DeepSeek returned empty structured output.');
+      return {
+        text,
+        usage: response.usage ? {
+          inputTokens: response.usage.input_tokens,
+          outputTokens: response.usage.output_tokens,
+          totalTokens: response.usage.total_tokens,
+        } : undefined,
+      };
     }
   }
 }
