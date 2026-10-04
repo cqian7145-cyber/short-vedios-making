@@ -1,6 +1,6 @@
 # Vibe Knowledge Video Engine
 
-A deterministic, Remotion-based visual engine for cinematic English-language knowledge videos. Task 001 establishes the foundation, Task 002 defines the shared visual design system, and Task 003 adds reusable frame-driven animation primitives. The project uses original abstract diagrams and currently contains no narration, music, external API calls, or API keys.
+A deterministic, Remotion-based visual engine for cinematic English-language knowledge videos. Task 001 establishes the foundation, Task 002 defines the shared visual design system, Task 003 adds reusable frame-driven animation primitives, and Task 005 makes the engine JSON-driven. Task 006 adds optional, explicit DeepSeek content drafting; the repository contains no embedded API credentials. There is no narration, TTS, or audio pipeline.
 
 ## Task roadmap
 
@@ -47,3 +47,16 @@ npm run render:episode -- episodes/dollar-auction.json
 Outputs: `output/braess-paradox.mp4` (60 seconds) and `output/dollar-auction.mp4` (47.4 seconds). Both are 1920×1080 at 30 FPS, with no audio. `npm run dev` also includes the generic `EpisodeVideo` composition, using Braess as its preview default. Other JSON inputs are supplied by the render command; duration is calculated automatically.
 
 Validate one file with `npm run validate:episode -- episodes/your-episode.json`. Read [EPISODE_FORMAT.md](docs/EPISODE_FORMAT.md) for the complete format, minimal example, scene vocabulary and restrictions. Regenerate the JSON Schema artifact with `npm run schema:episode`. [TASK_005.md](docs/tasks/TASK_005.md) records implementation and actual verification evidence.
+
+## AI content drafts (Task 006)
+
+DeepSeek generation is an optional, explicit CLI action. Set `DEEPSEEK_API_KEY` in the current shell; never place a real key in a file. `.env.example` documents variable names and is not auto-loaded. The default model is `deepseek-flash`; `deepseek-v4-pro` is optional.
+
+```powershell
+$env:DEEPSEEK_API_KEY="your-key"
+npm run generate:episode -- --topic "Why can more choices make decisions worse?" --id choice-overload --duration 150 --dry-run
+npm run render:episode -- episodes/generated/choice-overload.json
+npm run make:episode -- --topic "Why can more choices make decisions worse?" --id choice-overload-auto --duration 150
+```
+
+Generation writes a content brief, raw and validated JSON, and a report under `generated/<id>/`; the renderable episode goes under `episodes/generated/<id>.json`. Existing outputs are protected unless `--force` is given. `--brief path.md` adds a user-supplied brief; if `--topic` is also given, the brief supplies context and the topic supplies the requested focus. `--facts path.md` attaches user-provided evidence. Use `--model deepseek-v4-pro` to override `DEEPSEEK_MODEL`. Drafts are not researched or publication-verified; claims that need sources are flagged. See [AI_CONTENT_PIPELINE.md](docs/AI_CONTENT_PIPELINE.md) for the stage and evidence boundary.

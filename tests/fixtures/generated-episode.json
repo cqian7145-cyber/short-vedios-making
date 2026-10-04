@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "id": "dollar-auction",
+  "title": "The Dollar Auction",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "metadata": {
+    "language": "en",
+    "topic": "Escalation"
+  },
+  "networks": {},
+  "scenes": [
+    {
+      "id": "hook",
+      "type": "hook",
+      "durationSeconds": 6,
+      "transition": {
+        "overlapSeconds": 1.1
+      },
+      "content": {
+        "eyebrow": "THE DOLLAR AUCTION",
+        "headline": "A dollar.\nAt any price.",
+        "emphasis": "any price.",
+        "question": "WHEN DOES WINNING BECOME LOSING?",
+        "participants": [
+          "BIDDER A",
+          "BIDDER B"
+        ],
+        "relationshipLabel": "ONE PRIZE"
+      }
+    },
+    {
+      "id": "rules",
+      "type": "setup",
+      "durationSeconds": 7,
+      "transition": {
+        "overlapSeconds": 1.1
+      },
+      "content": {
+        "eyebrow": "THE RULES",
+        "title": "Two bidders. Both pay. Only one wins.",
+        "participants": [
+          "BIDDER A",
+          "BIDDER B"
+        ],
+        "relationshipLabel": "BOTH PAY THEIR FINAL BID"
+      }
+    },
+    {
+      "id": "bids",
+      "type": "simulation",
+      "durationSeconds": 16,
+      "transition": {
+        "overlapSeconds": 1.1
+      },
+      "content": {
+        "mode": "bidding",
+        "eyebrow": "THE ESCALATION",
+        "metricLabel": "One more bid feels reasonable.",
+        "participants": [
+          {
+            "id": "a",
+            "label": "BIDDER A",
+            "accent": "gold"
+          },
+          {
+            "id": "b",
+            "label": "BIDDER B",
+            "accent": "cyan"
+          }
+        ],
+        "bids": [
+          {
+            "bidderId": "a",
+            "amount": 0.2
+          },
+          {
+            "bidderId": "b",
+            "amount": 0.5
+          },
+          {
+            "bidderId": "a",
+            "amount": 0.9
+          },
+          {
+            "bidderId": "b",
+            "amount": 1.1
+          },
+          {
+            "bidderId": "a",
+            "amount": 1.5
+          }
+        ],
+        "prizeValue": 1,
+        "currencyPrefix": "$",
+        "relationshipLabel": "OUTBID \u2192 RESPOND",
+        "exceedsLabel": "THE BID EXCEEDS THE PRIZE"
+      }
+    },
+    {
+      "id": "cost",
+      "type": "comparison",
+      "durationSeconds": 7,
+      "transition": {
+        "overlapSeconds": 1.1
+      },
+      "content": {
+        "eyebrow": "THE COST OF WINNING",
+        "metricLabel": "The prize stays the same.",
+        "before": 1,
+        "after": 1.5,
+        "unit": "",
+        "prefix": "$",
+        "decimals": 2,
+        "beforeLabel": "PRIZE VALUE",
+        "afterLabel": "WINNING BID"
+      }
+    },
+    {
+      "id": "reveal",
+      "type": "reveal",
+      "durationSeconds": 7,
+      "transition": {
+        "overlapSeconds": 1.1
+      },
+      "content": {
+        "eyebrow": "THE TRAP",
+        "headline": "Quitting now\nlocks in a loss.",
+        "emphasis": "a loss.",
+        "participants": [
+          "BIDDER A",
+          "BIDDER B"
+        ],
+        "relationshipLabel": "KEEP GOING?"
+      }
+    },
+    {
+      "id": "mechanism",
+      "type": "explanation",
+      "durationSeconds": 7,
+      "transition": {
+        "overlapSeconds": 1.1
+      },
+      "content": {
+        "individualLabel": "EACH BIDDER",
+        "individualStatement": "One more bid might recover the loss.",
+        "systemLabel": "TOGETHER",
+        "systemStatement": "The cost keeps rising.",
+        "principle": "PAST COSTS CAN DISTORT THE NEXT CHOICE",
+        "bottleneckLabel": "ESCALATION",
+        "driverLabels": [
+          "BIDDER A",
+          "BIDDER B"
+        ],
+        "sharedLinkLabel": "THE NEXT BID"
+      }
+    },
+    {
+      "id": "ending",
+      "type": "ending",
+      "durationSeconds": 4,
+      "transition": {
+        "overlapSeconds": 1.1
+      },
+      "content": {
+        "concept": "THE DOLLAR AUCTION",
+        "summary": "A valuable prize. An expensive pursuit.",
+        "brand": "VIBE KNOWLEDGE"
+      }
+    }
+  ]
+}

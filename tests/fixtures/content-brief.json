@@ -1,0 +1,30 @@
+{
+  "topic": "Why can more choices make decisions worse?",
+  "centralQuestion": "Why can an added option make choosing harder?",
+  "commonIntuition": "More options should make it easier to find a good fit.",
+  "counterintuitiveResult": "A larger choice set can add comparison work and delay a decision.",
+  "mechanism": [
+    "Each new option adds another comparison.",
+    "People spend longer evaluating tradeoffs.",
+    "The decision can feel harder even when every option is acceptable."
+  ],
+  "visualMetaphor": "A small group of paths gradually branches into a dense field of routes.",
+  "endingInsight": "An option has value only when it helps someone choose.",
+  "suggestedSceneFlow": [
+    {"sceneType": "hook", "purpose": "Contrast more options with harder choosing.", "durationSeconds": 8},
+    {"sceneType": "setup", "purpose": "Show a person and a small set of choices.", "durationSeconds": 14},
+    {"sceneType": "diagram", "purpose": "Build the choice paths visually.", "durationSeconds": 20},
+    {"sceneType": "simulation", "purpose": "Add options and show comparison effort rise.", "durationSeconds": 32},
+    {"sceneType": "comparison", "purpose": "Compare a smaller and a larger choice set.", "durationSeconds": 16},
+    {"sceneType": "reveal", "purpose": "Show how more options can delay choosing.", "durationSeconds": 18},
+    {"sceneType": "explanation", "purpose": "Connect comparison work to decision friction.", "durationSeconds": 24},
+    {"sceneType": "ending", "purpose": "Close with a quiet insight about useful choice.", "durationSeconds": 18}
+  ],
+  "riskFlags": [
+    {
+      "claim": "A named psychology study established a precise ideal number of choices.",
+      "reason": "A study and numerical claim require independent source verification.",
+      "needsResearch": true
+    }
+  ]
+}
