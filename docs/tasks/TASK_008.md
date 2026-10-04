@@ -36,7 +36,7 @@ Connect the source-backed Task007 pipeline to a resumable one-command path that 
 - [x] No API key is logged or committed; no audio or upload stage.
 - [x] `npm run typecheck`, `npm test`, and `npm run validate:episodes` pass.
 - [x] Real Task007 artifacts complete an offline factory run and produce an MP4 and QA frames.
-- [ ] Git commit and push complete.
+- [x] Git commit and push complete.
 
 ## Evidence
 
