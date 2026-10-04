@@ -13,11 +13,14 @@
     "render:episode": "tsx scripts/render-episode.ts",
     "generate:episode": "tsx scripts/generate-episode.ts",
     "make:episode": "tsx scripts/make-episode.ts",
+    "research:episode": "tsx scripts/research-episode.ts",
+    "plan:visuals": "tsx scripts/plan-visuals.ts",
+    "generate:verified": "tsx scripts/generate-verified.ts",
     "validate:episode": "tsx scripts/validate-episode.ts",
     "validate:episodes": "tsx scripts/validate-episodes.ts",
     "test:episodes": "tsx --test src/episode/episode.test.ts",
     "test:ai": "tsx --test tests/generation.test.ts",
-    "test": "tsx --test src/episode/episode.test.ts tests/generation.test.ts",
+    "test": "tsx --test src/episode/episode.test.ts tests/generation.test.ts tests/task007.test.ts",
     "schema:episode": "tsx scripts/generate-episode-schema.ts"
   },
   "dependencies": {

@@ -60,3 +60,15 @@ npm run make:episode -- --topic "Why can more choices make decisions worse?" --i
 ```
 
 Generation writes a content brief, raw and validated JSON, and a report under `generated/<id>/`; the renderable episode goes under `episodes/generated/<id>.json`. Existing outputs are protected unless `--force` is given. `--brief path.md` adds a user-supplied brief; if `--topic` is also given, the brief supplies context and the topic supplies the requested focus. `--facts path.md` attaches user-provided evidence. Use `--model deepseek-v4-pro` to override `DEEPSEEK_MODEL`. Drafts are not researched or publication-verified; claims that need sources are flagged. See [AI_CONTENT_PIPELINE.md](docs/AI_CONTENT_PIPELINE.md) for the stage and evidence boundary.
+
+## Research and visual planning (Task 007)
+
+Task007 adds opt-in Tavily research, cited Fact Packs, a publication-readiness report, verified draft generation, and concept-specific VisualPlan QA. Set `TAVILY_API_KEY` and `DEEPSEEK_API_KEY` only in your shell; `.env.example` has empty placeholders. Automated tests use research fixtures and do not call Tavily.
+
+```powershell
+npm run research:episode -- --topic "Why can more choices make decisions worse?" --id paradox-of-choice --provider tavily --max-sources 20
+npm run generate:verified -- --topic "Why can more choices make decisions worse?" --id paradox-of-choice --duration 150
+npm run plan:visuals -- --episode episodes/generated/paradox-of-choice.json --facts research/paradox-of-choice/fact-pack.json
+```
+
+Research artifacts are written under `research/<id>/`; visual plans and QA reports under `generated/<id>/`. A blocked publication gate still permits draft rendering for visual review. See [RESEARCH_PIPELINE.md](docs/RESEARCH_PIPELINE.md) and [VISUAL_DIRECTOR.md](docs/VISUAL_DIRECTOR.md).

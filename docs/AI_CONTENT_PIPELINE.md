@@ -1,5 +1,7 @@
 # AI Content Pipeline — Task 006
 
+Task 007 adds the opt-in, source-backed research and verified-generation stages documented in [RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md). It also adds a separate Visual Director artifact described in [VISUAL_DIRECTOR.md](VISUAL_DIRECTOR.md); Episode schema v1 remains unchanged.
+
 Task 006 adds an optional drafting pipeline:
 
 ```text

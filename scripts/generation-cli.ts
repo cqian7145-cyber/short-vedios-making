@@ -102,7 +102,8 @@ export async function runGenerationCommand(args: string[], render = false): Prom
     console.warn(`⚠ Generated duration ${actual.toFixed(1)}s differs from the ${options.durationSeconds}s target by more than 15 seconds.`);
   }
   researchWarnings(result.brief).forEach((warning) => console.warn(warning));
-  console.warn('Draft only: independently verify factual claims before publication.');
+  if (result.report.publicationReady) console.log('✓ Publication-ready research gate passed.');
+  else { console.warn('⚠ Draft render allowed.'); console.warn('✗ Not publication-ready.'); }
   if (options.dryRun) {
     console.log('Dry run complete; rendering was skipped.');
     return;
