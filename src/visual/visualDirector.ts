@@ -50,6 +50,42 @@ const validateVisualPlanSemantics = (plan: VisualPlan, episode: Episode): string
   return errors;
 };
 
+export function validateVisualPlan(candidate: unknown, episode: Episode): VisualPlan {
+  const parsed = VisualDirectorSchema.safeParse(candidate);
+  if (!parsed.success) throw new Error(`VisualPlan schema validation failed:\n${formatZodIssues(parsed.error).map((error) => `- ${error}`).join('\n')}`);
+  const semanticErrors = validateVisualPlanSemantics(parsed.data, episode);
+  if (semanticErrors.length) throw new Error(`VisualPlan semantic validation failed:\n${semanticErrors.map((error) => `- ${error}`).join('\n')}`);
+  return parsed.data;
+}
+
+export async function repairVisualPlanForQuality(input: {
+  brief: unknown;
+  factPack: FactPack;
+  episode: Episode;
+  currentPlan: VisualPlan;
+  warnings: string[];
+  provider: LLMProvider;
+}): Promise<VisualPlan> {
+  const repairPrompt = await readFile(path.join(process.cwd(), 'prompts', 'repair-visual-quality.md'), 'utf8');
+  const response = await input.provider.generateStructured({
+    schemaName: 'visual_plan_v1', schema: visualPlanJsonSchema,
+    instructions: `${repairPrompt}\n\nCapability registry: ${JSON.stringify(visualCapabilitySummary)}. Return JSON only.`,
+    input: JSON.stringify({
+      brief: input.brief,
+      verifiedClaims: input.factPack.verifiedClaims,
+      safeConceptualClaims: input.factPack.safeConceptualClaims,
+      sceneIdsInOrder: input.episode.scenes.map((scene) => scene.id),
+      currentVisualPlan: input.currentPlan,
+      visualQualityWarnings: input.warnings,
+    }),
+    maxOutputTokens: 5000,
+  });
+  let candidate: unknown;
+  try { candidate = JSON.parse(response.text) as unknown; }
+  catch { throw new Error('Visual QA repair returned invalid JSON.'); }
+  return validateVisualPlan(candidate, input.episode);
+}
+
 export async function createVisualPlan(input: {brief: unknown; factPack: FactPack; episode: Episode; provider: LLMProvider; targetDurationSeconds?: number}): Promise<{plan: VisualPlan; diversity: ReturnType<typeof auditVisualPlan>; structuralRepairAttempts: number}> {
   const [prompt, repairPrompt] = await Promise.all([
     readFile(path.join(process.cwd(), 'prompts', 'visual-director.md'), 'utf8'),
@@ -74,13 +110,10 @@ export async function createVisualPlan(input: {brief: unknown; factPack: FactPac
     }
     if (errors.length === 0) {
       const validation = VisualDirectorSchema.safeParse(parsed);
-      if (!validation.success) {
-        errors = formatZodIssues(validation.error);
-      } else {
+      if (!validation.success) errors = formatZodIssues(validation.error);
+      else {
         errors = validateVisualPlanSemantics(validation.data, input.episode);
-        if (errors.length === 0) {
-          return {plan: validation.data, diversity: auditVisualPlan(validation.data, input.episode), structuralRepairAttempts: attempt};
-        }
+        if (errors.length === 0) return {plan: validation.data, diversity: auditVisualPlan(validation.data, input.episode), structuralRepairAttempts: attempt};
       }
     }
     if (attempt === MAX_VISUAL_PLAN_REPAIR_ATTEMPTS) break;

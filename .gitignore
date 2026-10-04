@@ -8,5 +8,9 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+runs/
+deliveries/
+qa/
+**/factory.log
 generated/
 /research/

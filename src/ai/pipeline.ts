@@ -33,6 +33,7 @@ export type GenerationOptions = {
   durationSeconds: number;
   force?: boolean;
   verifiedFactPack?: FactPack;
+  contentBrief?: ContentBrief;
 };
 
 export type GenerationPaths = {
@@ -176,7 +177,7 @@ export async function generateEpisode(
   const reportPath = path.join(artifactsDir, 'generation-report.json');
   const tokenUsage = {inputTokens: 0, outputTokens: 0, totalTokens: 0};
   const verifiedModeInstruction = verifiedFactPack ? '\n\nVERIFIED MODE: Use ONLY verified claims or safe conceptual claims from the supplied Fact Pack. Do not use uncertain or contradicted claims, and do not add factual claims.' : '';
-  const verifiedFactsInput = verifiedFactPack ? `\n\nVerified Fact Pack (only verifiedClaims and safeConceptualClaims are included):\n${JSON.stringify({verifiedClaims: verifiedFactPack.verifiedClaims, safeConceptualClaims: verifiedFactPack.safeConceptualClaims})}` : '';
+  const verifiedFactsInput = verifiedFactPack ? `\n\nVerified Fact Pack (only verifiedClaims and safeConceptualClaims are included):\n${JSON.stringify({verifiedClaims: verifiedFactPack.verifiedClaims, safeConceptualClaims: verifiedFactPack.safeConceptualClaims})}\nFor traceability, every scene must include claimIds using only IDs from verifiedClaims that support factual copy. Use an empty claimIds array for safe conceptual or purely visual copy.` : '';
 
   const briefRequest = {
     schemaName: 'content_brief_v1', schema: briefSchemaJson,
@@ -184,9 +185,9 @@ export async function generateEpisode(
     input: `${sourceInput}${verifiedFactsInput}\n\nRequested duration: ${options.durationSeconds} seconds.`,
     maxOutputTokens: 2_500,
   };
-  let briefResponse = await provider.generateStructured(briefRequest);
-  addUsage(tokenUsage, briefResponse.usage);
-  let briefCandidateText = briefResponse.text;
+  let briefResponse: StructuredGenerationResult | undefined = options.contentBrief ? undefined : await provider.generateStructured(briefRequest);
+  addUsage(tokenUsage, briefResponse?.usage);
+  let briefCandidateText = options.contentBrief ? JSON.stringify(ContentBriefSchema.parse(options.contentBrief)) : briefResponse!.text;
   let brief: ContentBrief | undefined;
   let briefValidationAttempts = 0;
   let briefRepairAttempts = 0;
@@ -250,7 +251,7 @@ export async function generateEpisode(
 
   const episodeRequest = {
     schemaName: 'episode_v1', schema: episodeSchemaJson,
-    instructions: `${episodeDirectorPrompt}\n\nVisual style reference (prompts/STYLE_GUIDE.md):\n${styleGuide}${verifiedFactPack ? '\n\nVERIFIED MODE: Use ONLY claims in the verified Fact Pack or safe conceptual claims. Do not reintroduce rejected, uncertain, or contradicted material. Do not add factual claims.' : ''}\n\nOutput valid JSON only.`,
+    instructions: `${episodeDirectorPrompt}\n\nVisual style reference (prompts/STYLE_GUIDE.md):\n${styleGuide}${verifiedFactPack ? '\n\nVERIFIED MODE: Use ONLY claims in the verified Fact Pack or safe conceptual claims. Do not reintroduce rejected, uncertain, or contradicted material. Do not add factual claims. Provide accurate per-scene claimIds as specified.' : ''}\n\nOutput valid JSON only.`,
     input: `Episode id: ${id}\nTarget duration: ${options.durationSeconds} seconds.\n\nContentBrief JSON:\n${JSON.stringify(brief)}${verifiedFactsInput}`,
     maxOutputTokens: 9_000,
   };
@@ -277,6 +278,15 @@ export async function generateEpisode(
         throw new Error(`scenes: expected 6–12 generated scenes; received ${normalized.scenes.length}`);
       }
       parsedEpisode = validateEpisode(withRequestedId, `DeepSeek episode ${id}`);
+      if (verifiedFactPack) {
+        const verifiedClaimIds = new Set(verifiedFactPack.verifiedClaims.map((claim) => claim.id));
+        for (const [sceneIndex, scene] of parsedEpisode.scenes.entries()) {
+          const unsupportedIds = (scene.claimIds ?? []).filter((claimId) => !verifiedClaimIds.has(claimId));
+          if (unsupportedIds.length) throw new Error(`scenes[${sceneIndex}].claimIds contains IDs not present in verifiedClaims: ${unsupportedIds.join(', ')}`);
+        }
+      } else if (parsedEpisode.scenes.some((scene) => scene.claimIds?.length)) {
+        throw new Error('scenes.claimIds can be used only when a verified Fact Pack is supplied.');
+      }
       break;
     } catch (error) {
       errors.push(conciseError(error));

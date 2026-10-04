@@ -102,19 +102,20 @@ export async function createFactPack(input: {topic: string; brief: ContentBrief;
   });
 }
 
-export async function researchEpisode(input: {
-  topic: string; id: string; brief: ContentBrief; llm: LLMProvider; research: ResearchProvider;
-  maxSources?: number; researchRoot?: string;
-}): Promise<{factPack: FactPack; paths: Record<string, string>; report: Record<string, unknown>}> {
+export async function searchResearchSources(input: {queries: string[]; research: ResearchProvider; maxSources?: number}): Promise<ResearchSource[]> {
   const maxSources = input.maxSources ?? DEFAULT_MAX_SOURCES;
   if (!Number.isInteger(maxSources) || maxSources < 3 || maxSources > MAX_RESEARCH_QUERIES * MAX_RESULTS_PER_QUERY) {
     throw new Error(`--max-sources must be an integer from 3 to ${MAX_RESEARCH_QUERIES * MAX_RESULTS_PER_QUERY}.`);
   }
-  const queries = await planResearchQueries(input.topic, input.brief, input.llm);
-  const perQuery = Math.min(MAX_RESULTS_PER_QUERY, Math.max(1, Math.ceil(maxSources / queries.length)));
-  const results = await Promise.all(queries.map((query) => input.research.search(query, {maxResults: perQuery})));
-  const sources = makeSources(results).slice(0, maxSources);
-  const factPack = await createFactPack({topic: input.topic, brief: input.brief, sources, provider: input.llm});
+  if (input.queries.length < 3 || input.queries.length > MAX_RESEARCH_QUERIES) throw new Error(`Research plan must contain 3–${MAX_RESEARCH_QUERIES} queries.`);
+  const perQuery = Math.min(MAX_RESULTS_PER_QUERY, Math.max(1, Math.ceil(maxSources / input.queries.length)));
+  const results = await Promise.all(input.queries.map((query) => input.research.search(query, {maxResults: perQuery})));
+  return makeSources(results).slice(0, maxSources);
+}
+
+export async function persistResearchArtifacts(input: {
+  topic: string; id: string; queries: string[]; maxSources: number; sources: ResearchSource[]; factPack: FactPack; researchRoot?: string;
+}): Promise<{paths: Record<string, string>; report: Record<string, unknown>}> {
   const researchRoot = path.resolve(input.researchRoot ?? path.join(root, 'research'));
   const outputDir = path.join(researchRoot, input.id);
   await mkdir(outputDir, {recursive: true});
@@ -126,24 +127,36 @@ export async function researchEpisode(input: {
     report: path.join(outputDir, 'research-report.json'),
     sourcesMarkdown: path.join(outputDir, 'sources.md'),
   };
-  const allClaims = [...factPack.verifiedClaims, ...factPack.uncertainClaims, ...factPack.contradictedClaims];
+  const allClaims = [...input.factPack.verifiedClaims, ...input.factPack.uncertainClaims, ...input.factPack.contradictedClaims];
   const report = {
-    topic: input.topic, queryCount: queries.length, sourceCount: sources.length,
-    tierCounts: {A: sources.filter((source) => source.sourceTier === 'A').length, B: sources.filter((source) => source.sourceTier === 'B').length, C: sources.filter((source) => source.sourceTier === 'C').length},
-    verifiedCount: factPack.verifiedClaims.length, uncertainCount: factPack.uncertainClaims.length,
-    contradictedCount: factPack.contradictedClaims.length, publicationReady: factPack.publicationReady,
-    maxSources, status: 'completed',
+    topic: input.topic, queryCount: input.queries.length, sourceCount: input.sources.length,
+    tierCounts: {A: input.sources.filter((source) => source.sourceTier === 'A').length, B: input.sources.filter((source) => source.sourceTier === 'B').length, C: input.sources.filter((source) => source.sourceTier === 'C').length},
+    verifiedCount: input.factPack.verifiedClaims.length, uncertainCount: input.factPack.uncertainClaims.length,
+    contradictedCount: input.factPack.contradictedClaims.length, publicationReady: input.factPack.publicationReady,
+    maxSources: input.maxSources, status: 'completed',
     promptVersions: {queryPlanner: 'research-query-planner-v1', factAssessor: 'fact-assessor-v1'},
   };
   await Promise.all([
-    writeJson(paths.researchPlan, {topic: input.topic, queries, maxSources, resultsPerQuery: perQuery}),
-    writeJson(paths.sources, sources), writeJson(paths.claims, allClaims), writeJson(paths.factPack, factPack), writeJson(paths.report, report),
-    writeFile(paths.sourcesMarkdown, renderSourcesMarkdown(allClaims, sources), 'utf8'),
+    writeJson(paths.researchPlan, {topic: input.topic, queries: input.queries, maxSources: input.maxSources, resultsPerQuery: Math.min(MAX_RESULTS_PER_QUERY, Math.max(1, Math.ceil(input.maxSources / input.queries.length)))}),
+    writeJson(paths.sources, input.sources), writeJson(paths.claims, allClaims), writeJson(paths.factPack, input.factPack), writeJson(paths.report, report),
+    writeFile(paths.sourcesMarkdown, renderSourcesMarkdown(allClaims, input.sources), 'utf8'),
   ]);
-  return {factPack, paths, report};
+  return {paths, report};
 }
 
-function renderSourcesMarkdown(claims: FactClaim[], sources: ResearchSource[]): string {
+export async function researchEpisode(input: {
+  topic: string; id: string; brief: ContentBrief; llm: LLMProvider; research: ResearchProvider;
+  maxSources?: number; researchRoot?: string;
+}): Promise<{factPack: FactPack; paths: Record<string, string>; report: Record<string, unknown>}> {
+  const maxSources = input.maxSources ?? DEFAULT_MAX_SOURCES;
+  const queries = await planResearchQueries(input.topic, input.brief, input.llm);
+  const sources = await searchResearchSources({queries, research: input.research, maxSources});
+  const factPack = await createFactPack({topic: input.topic, brief: input.brief, sources, provider: input.llm});
+  const persisted = await persistResearchArtifacts({topic: input.topic, id: input.id, queries, maxSources, sources, factPack, researchRoot: input.researchRoot});
+  return {factPack, ...persisted};
+}
+
+export function renderSourcesMarkdown(claims: FactClaim[], sources: ResearchSource[]): string {
   const byId = new Map(sources.map((source) => [source.id, source]));
   const lines = ['# Research Sources', '', 'Claims and source links for human review.', ''];
   for (const claim of claims) {

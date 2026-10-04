@@ -72,3 +72,15 @@ npm run plan:visuals -- --episode episodes/generated/paradox-of-choice.json --fa
 ```
 
 Research artifacts are written under `research/<id>/`; visual plans and QA reports under `generated/<id>/`. A blocked publication gate still permits draft rendering for visual review. See [RESEARCH_PIPELINE.md](docs/RESEARCH_PIPELINE.md) and [VISUAL_DIRECTOR.md](docs/VISUAL_DIRECTOR.md).
+
+## One-command verified factory (Task 008)
+
+The factory connects the existing brief, research, Fact Pack, verified Episode, VisualPlan, release gates, deterministic Remotion render, and review package. If valid Task007 artifacts already exist for the same topic and ID, it reuses them and does not call Tavily or regenerate the Fact Pack. Rendering reads only saved Episode and VisualPlan data and has no provider/API dependency.
+
+```powershell
+npm run factory -- --topic "Why can more choices make decisions worse?" --id paradox-of-choice --duration 150
+```
+
+Run `npm run factory -- --help` for options. Use `--resume` to recover checkpoints, `--skip-render` to build the verified package without MP4, `--draft` to package a clearly labelled blocked draft, and `--force` to start over for the given ID. DeepSeek/Tavily keys are needed only for missing pipeline artifacts. Set them in the shell or a local `.env` file (ignored by Git); `.env.example` contains empty placeholders.
+
+The command writes resumable state and logs to `runs/<id>/`, a release package to `deliveries/<id>/`, deterministic QA stills to `qa/<id>/`, and the rendered MP4 to `output/<id>.mp4`. For 120–180 second episodes, the release gate requires a diversity score of at least 50, at least four archetypes, no repeated archetype run longer than two, network scenes at or below 50%, text-dominant scenes at or below 60%, and a signature moment. The automatic visual-plan quality repair is bounded to one attempt. Remotion stills are produced at representative frames for human review; they are not a claim that a model inspected every pixel. See [FACTORY.md](docs/FACTORY.md) and [TASK_008.md](docs/tasks/TASK_008.md).

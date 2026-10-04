@@ -27,3 +27,7 @@ npm run plan:visuals -- --episode episodes/generated/paradox-of-choice.json --fa
 ```
 
 Outputs are `generated/paradox-of-choice/visual-plan.json` and `generated/paradox-of-choice/visual-diversity-report.json`. Canva is not integrated; external assets default to `none`.
+
+## Task 008 rendering handoff
+
+The factory validates and reuses a saved VisualPlan against the exact Episode scene IDs, resolves each requested archetype to a renderer capability and semantic layout, and records any fallback in `factory-report.json`. Any measurement-driven renderer uses values already present in the Episode; the factory does not invent data. The quality gate may request one bounded VisualPlan repair if a production-length episode misses a release requirement. Task007's structural repair counter and Task008's visual QA repair counter are separate. Remotion receives the resolved strategy together with the saved Episode; no research or LLM provider is called during rendering.

@@ -40,3 +40,7 @@ npm run generate:verified -- --topic "Why can more choices make decisions worse?
 ```
 
 The research CLI uses Tavily only when explicitly invoked. `npm test` uses fixtures and mocks. `generate:verified` creates an initial brief, research plan and Fact Pack, then generates a validated draft and capability-aware VisualPlan from verified claims and safe conceptual claims; uncertain and contradicted claims are excluded from generation prompts. Research readiness is reported separately from render permission. This command does not render or upload a video.
+
+## Task 008 factory handoff
+
+`npm run factory -- --topic "..." --id <id>` looks for a schema-valid `research/<id>/fact-pack.json` and the sibling saved content brief before making a new research plan. When the Fact Pack topic matches, the factory records Research Plan and Research as skipped and Fact Pack as reused, so a Task007 real smoke can flow directly into Episode/VisualPlan validation and Remotion. Pass `--resume` with `--id` to use run checkpoints; pass `--facts path.json` for an explicit Fact Pack. A topic mismatch is not reused. Research is repeated only when no valid matching Fact Pack or reusable source checkpoints are available.

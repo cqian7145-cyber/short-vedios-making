@@ -2,6 +2,8 @@
 
 Task 007 adds the opt-in, source-backed research and verified-generation stages documented in [RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md). It also adds a separate Visual Director artifact described in [VISUAL_DIRECTOR.md](VISUAL_DIRECTOR.md); Episode schema v1 remains unchanged.
 
+Task 008 consumes these artifacts through the one-command factory. A valid same-topic Task007 Fact Pack, Episode, and VisualPlan can be resumed without repeating research or generation. See [FACTORY.md](FACTORY.md) for reuse rules and release gates.
+
 Task 006 adds an optional drafting pipeline:
 
 ```text

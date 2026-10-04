@@ -31,6 +31,7 @@ export type BaseSceneSpec<K extends SceneType, C> = {
   id: string;
   type: K;
   durationInFrames: number;
+  claimIds?: readonly string[];
   transition?: SceneTransitionSpec;
   subtitle?: string;
   intent?: SceneIntent;

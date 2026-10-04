@@ -11,6 +11,7 @@ export const VISUAL_CAPABILITY_IDS = [
 ] as const;
 export const VisualCapabilityIdSchema = z.enum(VISUAL_CAPABILITY_IDS);
 export const VisualCameraIntentSchema = z.enum(['slow_push_in', 'slow_pull_back', 'drift', 'locked', 'tracking', 'reframe']);
+export const VisualLayoutVariantSchema = z.enum(['left-focus', 'right-focus', 'center-stage', 'full-field', 'split-spatial', 'topographic']).default('center-stage');
 export const VisualScenePlanSchema = z.strictObject({
   sceneId: z.string().min(1).max(100),
   primaryArchetype: VisualArchetypeSchema,
@@ -22,6 +23,7 @@ export const VisualScenePlanSchema = z.strictObject({
   continuityFromPrevious: z.string().max(400),
   reuseExistingPrimitive: z.string().min(1).max(240),
   requiredCapabilities: z.array(VisualCapabilityIdSchema).max(12),
+  layoutVariant: VisualLayoutVariantSchema,
   fallbackArchetype: VisualArchetypeSchema.optional(),
   textDominant: z.boolean(),
 });
