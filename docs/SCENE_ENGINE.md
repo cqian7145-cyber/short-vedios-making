@@ -48,3 +48,11 @@ Use `Subtitle` for restrained English lower thirds. Scene `subtitle` content fad
 ## Task 004 composition
 
 `Task004SceneEngine` is 1920×1080, 30 FPS, 1800 frames (60 seconds). Preview in Studio with `npm run dev`, or render to `output/task004-scene-engine.mp4` with `npm run render:task004`.
+
+## Task 005: JSON authoring layer
+
+`src/episode/` adds strict runtime validation, inferred JSON types, semantic reference checks, and seconds-to-frames normalization above this engine. The frame-based timeline remains unchanged. `EpisodeVideo` receives normalized props; its dynamic metadata is derived from the actual timeline. Node file I/O lives in `loadEpisode`, outside frame rendering.
+
+The original simulation was network-specific. It now supports the semantic `networkFlow` and `bidding` modes, sharing the existing registry entry. `BiddingSimulation` is a generic visualization helper using existing AgentToken, Relationship, Counter, FlowParticles and Callout primitives. Hook/setup/reveal can show participant pairs, while comparison/explanation/ending can render without a road network. No episode-specific scene or new scene type was added. `task004Demo.ts` explicitly selects `networkFlow` and remains independently renderable.
+
+See [EPISODE_FORMAT.md](EPISODE_FORMAT.md) for the author-facing contract. Node CLI input is validated before bundling; direct raw Remotion props should use the normalized `EpisodeVideoProps` contract.

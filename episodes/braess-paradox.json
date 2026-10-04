@@ -1,0 +1,334 @@
+{
+  "schemaVersion": 1,
+  "id": "braess-paradox",
+  "title": "Why Can More Roads Make Traffic Worse?",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "metadata": {
+    "language": "en"
+  },
+  "networks": {
+    "braess-network": {
+      "id": "braess-network",
+      "nodes": [
+        {
+          "id": "start",
+          "label": "A",
+          "x": 600,
+          "y": 490
+        },
+        {
+          "id": "upper",
+          "label": "B",
+          "x": 920,
+          "y": 340
+        },
+        {
+          "id": "lower",
+          "label": "C",
+          "x": 920,
+          "y": 650
+        },
+        {
+          "id": "finish",
+          "label": "D",
+          "x": 1280,
+          "y": 490
+        }
+      ],
+      "edges": [
+        {
+          "id": "north-west",
+          "from": "start",
+          "to": "upper",
+          "path": "M 600 490 Q 748 378 920 340"
+        },
+        {
+          "id": "north-east",
+          "from": "upper",
+          "to": "finish",
+          "path": "M 920 340 Q 1108 369 1280 490"
+        },
+        {
+          "id": "south-west",
+          "from": "start",
+          "to": "lower",
+          "path": "M 600 490 Q 748 602 920 650"
+        },
+        {
+          "id": "south-east",
+          "from": "lower",
+          "to": "finish",
+          "path": "M 920 650 Q 1108 611 1280 490"
+        },
+        {
+          "id": "new-road",
+          "from": "upper",
+          "to": "lower",
+          "path": "M 920 340 L 920 650",
+          "role": "added",
+          "label": "NEW LINK"
+        }
+      ],
+      "routes": [
+        {
+          "id": "north-route",
+          "label": "NORTH ROUTE",
+          "path": "M 600 490 Q 748 378 920 340 Q 1108 369 1280 490",
+          "accent": "gold"
+        },
+        {
+          "id": "south-route",
+          "label": "SOUTH ROUTE",
+          "path": "M 600 490 Q 748 602 920 650 Q 1108 611 1280 490",
+          "accent": "cyan"
+        },
+        {
+          "id": "shortcut-route",
+          "label": "SHORTCUT ROUTE",
+          "path": "M 600 490 Q 748 378 920 340 L 920 650 Q 1108 611 1280 490",
+          "accent": "red"
+        }
+      ],
+      "addedEdgeId": "new-road",
+      "bottleneck": {
+        "x": 920,
+        "y": 495,
+        "nodeId": "upper"
+      }
+    }
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "type": "hook",
+      "content": {
+        "networkId": "braess-network",
+        "eyebrow": "A QUESTION ABOUT CHOICE",
+        "headline": "MORE ROADS\nSHOULD MEAN LESS TRAFFIC.",
+        "emphasis": "LESS TRAFFIC",
+        "question": "RIGHT?"
+      },
+      "subtitle": "Could one new link slow everyone down?",
+      "intent": {
+        "focus": "two paths to one destination",
+        "accent": "gold",
+        "density": "sparse",
+        "camera": "slowPushIn"
+      },
+      "durationSeconds": 6.8
+    },
+    {
+      "id": "setup",
+      "type": "setup",
+      "content": {
+        "networkId": "braess-network",
+        "eyebrow": "THE NETWORK",
+        "title": "Two routes. One destination.",
+        "routeLabel": "TWO AVAILABLE ROUTES",
+        "destinationLabel": "SHARED DESTINATION"
+      },
+      "subtitle": "Before anything changes, the routes share the load.",
+      "intent": {
+        "focus": "two balanced routes",
+        "density": "balanced",
+        "camera": "parallax"
+      },
+      "durationSeconds": 7.8,
+      "transition": {
+        "overlapSeconds": 1.1333333333333333
+      }
+    },
+    {
+      "id": "history",
+      "type": "history",
+      "content": {
+        "eyebrow": "A COUNTERINTUITIVE RESULT",
+        "year": "1968",
+        "name": "Dietrich Braess",
+        "mark": "NETWORK EQUILIBRIUM",
+        "formula": "individual choice ≠ collective optimum",
+        "formulaAnnotation": "A system can settle into a slower balance"
+      },
+      "subtitle": "A network paradox described by Dietrich Braess.",
+      "intent": {
+        "focus": "paradox origin",
+        "accent": "gold",
+        "density": "sparse",
+        "camera": "slowPushIn"
+      },
+      "durationSeconds": 5.8,
+      "transition": {
+        "overlapSeconds": 1.1333333333333333
+      }
+    },
+    {
+      "id": "diagram",
+      "type": "diagram",
+      "content": {
+        "networkId": "braess-network",
+        "eyebrow": "THE ROUTE STRUCTURE",
+        "title": "Every driver picks a fastest route.",
+        "footnote": "Travel time rises with congestion.",
+        "highlightNodeId": "upper",
+        "annotations": [
+          {
+            "label": "START",
+            "anchorNodeId": "start"
+          },
+          {
+            "label": "SAME DESTINATION",
+            "anchorNodeId": "finish"
+          }
+        ]
+      },
+      "subtitle": "Each driver optimizes one trip, with the same shared roads.",
+      "intent": {
+        "focus": "route topology and shared links",
+        "density": "balanced",
+        "camera": "parallax"
+      },
+      "durationSeconds": 10.8,
+      "transition": {
+        "overlapSeconds": 1.1333333333333333
+      }
+    },
+    {
+      "id": "simulation",
+      "type": "simulation",
+      "content": {
+        "mode": "networkFlow",
+        "networkId": "braess-network",
+        "eyebrow": "A SYSTEM IN MOTION",
+        "metricLabel": "Average travel time",
+        "beforeCaption": "BEFORE THE NEW LINK",
+        "afterCaption": "AFTER ROUTES REBALANCE",
+        "from": 65,
+        "to": 80,
+        "unit": " min",
+        "baselineRouteCounts": {
+          "north-route": 7,
+          "south-route": 7
+        },
+        "redistributedRouteCounts": {
+          "north-route": 3,
+          "south-route": 2,
+          "shortcut-route": 9
+        },
+        "addedEdgeId": "new-road",
+        "newRouteId": "shortcut-route",
+        "bottleneckLabel": "BOTTLENECK"
+      },
+      "subtitle": "A new shortcut attracts drivers toward the same bottleneck.",
+      "intent": {
+        "focus": "new link and bottleneck",
+        "accent": "red",
+        "density": "dense",
+        "camera": "slowPushIn"
+      },
+      "durationSeconds": 13.8,
+      "transition": {
+        "overlapSeconds": 1.1333333333333333
+      }
+    },
+    {
+      "id": "comparison",
+      "type": "comparison",
+      "content": {
+        "networkId": "braess-network",
+        "eyebrow": "THE OUTCOME",
+        "metricLabel": "Average travel time",
+        "before": 65,
+        "after": 80,
+        "unit": " min",
+        "beforeLabel": "WITHOUT THE NEW ROAD",
+        "afterLabel": "WITH THE NEW ROAD"
+      },
+      "subtitle": "The shorter-looking option makes the whole trip longer.",
+      "intent": {
+        "focus": "before and after result",
+        "accent": "red",
+        "density": "sparse",
+        "camera": "parallax"
+      },
+      "durationSeconds": 6.8,
+      "transition": {
+        "overlapSeconds": 1.1333333333333333
+      }
+    },
+    {
+      "id": "reveal",
+      "type": "reveal",
+      "content": {
+        "networkId": "braess-network",
+        "eyebrow": "THE PARADOX",
+        "headline": "THE EXTRA ROAD\nMADE TRAFFIC WORSE.",
+        "emphasis": "MADE TRAFFIC WORSE",
+        "highlightNodeId": "upper",
+        "highlightEdgeId": "new-road"
+      },
+      "subtitle": "More capacity can produce a worse equilibrium.",
+      "intent": {
+        "focus": "new link into bottleneck",
+        "accent": "gold",
+        "density": "balanced",
+        "camera": "slowPushIn"
+      },
+      "durationSeconds": 6.8,
+      "transition": {
+        "overlapSeconds": 1.1333333333333333
+      }
+    },
+    {
+      "id": "explanation",
+      "type": "explanation",
+      "content": {
+        "networkId": "braess-network",
+        "individualLabel": "INDIVIDUAL LOGIC",
+        "individualStatement": "Choose the route that looks fastest.",
+        "systemLabel": "SYSTEM RESULT",
+        "systemStatement": "Everyone crowds the same shortcut.",
+        "principle": "LOCAL OPTIMA CAN CREATE GLOBAL COST.",
+        "bottleneckLabel": "SHARED BOTTLENECK",
+        "driverLabels": [
+          "DRIVER A",
+          "DRIVER B"
+        ],
+        "sharedLinkLabel": "SHARED LINK",
+        "focusNodeId": "upper"
+      },
+      "subtitle": "What is best for one driver can be worse for everyone.",
+      "intent": {
+        "focus": "individual versus system outcome",
+        "accent": "red",
+        "density": "sparse",
+        "camera": "parallax"
+      },
+      "durationSeconds": 5.8,
+      "transition": {
+        "overlapSeconds": 1.1333333333333333
+      }
+    },
+    {
+      "id": "ending",
+      "type": "ending",
+      "content": {
+        "networkId": "braess-network",
+        "concept": "BRAESS'S PARADOX",
+        "summary": "More connections do not always mean better systems.",
+        "brand": "VIBE KNOWLEDGE"
+      },
+      "intent": {
+        "focus": "quiet branded close",
+        "accent": "gold",
+        "density": "sparse",
+        "camera": "slowPullBack"
+      },
+      "durationSeconds": 4.666666666666667,
+      "transition": {
+        "overlapSeconds": 1.1333333333333333
+      }
+    }
+  ]
+}

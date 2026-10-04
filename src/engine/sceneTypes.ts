@@ -37,11 +37,12 @@ export type BaseSceneSpec<K extends SceneType, C> = {
   content: C;
 };
 
-export type HookSceneSpec = BaseSceneSpec<'hook', {networkId: string; eyebrow: string; headline: string; emphasis: string; question: string}>;
-export type SetupSceneSpec = BaseSceneSpec<'setup', {networkId: string; eyebrow: string; title: string; routeLabel: string; destinationLabel: string}>;
+export type HookSceneSpec = BaseSceneSpec<'hook', {networkId?: string; eyebrow: string; headline: string; emphasis: string; question: string; participants?: readonly [string, string]; relationshipLabel?: string}>;
+export type SetupSceneSpec = BaseSceneSpec<'setup', {networkId?: string; eyebrow: string; title: string; routeLabel?: string; destinationLabel?: string; participants?: readonly [string, string]; relationshipLabel?: string}>;
 export type HistorySceneSpec = BaseSceneSpec<'history', {eyebrow: string; year: string; name: string; mark: string; formula: string; formulaAnnotation: string}>;
 export type DiagramSceneSpec = BaseSceneSpec<'diagram', {networkId: string; eyebrow: string; title: string; footnote: string; highlightNodeId?: string; highlightEdgeId?: string; annotations: readonly {label: string; detail?: string; anchorNodeId: string}[]}>;
-export type SimulationSceneSpec = BaseSceneSpec<'simulation', {
+export type NetworkFlowSimulationContent = {
+  mode: 'networkFlow';
   networkId: string;
   eyebrow: string;
   metricLabel: string;
@@ -55,11 +56,23 @@ export type SimulationSceneSpec = BaseSceneSpec<'simulation', {
   addedEdgeId: string;
   newRouteId: string;
   bottleneckLabel: string;
-}>;
-export type ComparisonSceneSpec = BaseSceneSpec<'comparison', {networkId: string; eyebrow: string; metricLabel: string; before: number; after: number; unit: string; beforeLabel: string; afterLabel: string}>;
-export type RevealSceneSpec = BaseSceneSpec<'reveal', {networkId: string; eyebrow: string; headline: string; emphasis: string; highlightNodeId?: string; highlightEdgeId?: string}>;
-export type ExplanationSceneSpec = BaseSceneSpec<'explanation', {networkId: string; individualLabel: string; individualStatement: string; systemLabel: string; systemStatement: string; principle: string; bottleneckLabel: string; driverLabels: readonly [string, string]; sharedLinkLabel: string; focusNodeId?: string}>;
-export type EndingSceneSpec = BaseSceneSpec<'ending', {networkId: string; concept: string; summary: string; brand: string}>;
+};
+export type BiddingSimulationContent = {
+  mode: 'bidding';
+  eyebrow: string;
+  metricLabel: string;
+  participants: readonly [{id: string; label: string; accent?: AccentName}, {id: string; label: string; accent?: AccentName}];
+  bids: readonly {bidderId: string; amount: number}[];
+  prizeValue: number;
+  currencyPrefix: string;
+  relationshipLabel: string;
+  exceedsLabel: string;
+};
+export type SimulationSceneSpec = BaseSceneSpec<'simulation', NetworkFlowSimulationContent | BiddingSimulationContent>;
+export type ComparisonSceneSpec = BaseSceneSpec<'comparison', {networkId?: string; eyebrow: string; metricLabel: string; before: number; after: number; unit: string; prefix?: string; decimals?: number; beforeLabel: string; afterLabel: string}>;
+export type RevealSceneSpec = BaseSceneSpec<'reveal', {networkId?: string; eyebrow: string; headline: string; emphasis: string; highlightNodeId?: string; highlightEdgeId?: string; participants?: readonly [string, string]; relationshipLabel?: string}>;
+export type ExplanationSceneSpec = BaseSceneSpec<'explanation', {networkId?: string; individualLabel: string; individualStatement: string; systemLabel: string; systemStatement: string; principle: string; bottleneckLabel: string; driverLabels: readonly [string, string]; sharedLinkLabel: string; focusNodeId?: string}>;
+export type EndingSceneSpec = BaseSceneSpec<'ending', {networkId?: string; concept: string; summary: string; brand: string}>;
 
 export type SceneSpec = HookSceneSpec | SetupSceneSpec | HistorySceneSpec | DiagramSceneSpec | SimulationSceneSpec | ComparisonSceneSpec | RevealSceneSpec | ExplanationSceneSpec | EndingSceneSpec;
 

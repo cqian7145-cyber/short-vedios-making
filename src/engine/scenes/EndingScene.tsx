@@ -9,10 +9,9 @@ import {NetworkStage} from './NetworkStage';
 export const EndingScene: React.FC<SceneComponentProps<EndingSceneSpec>> = ({spec, context}) => {
   const {localFrame, durationInFrames} = context;
   const network = context.network;
-  if (!network) return null;
   const fade = interpolate(localFrame, [durationInFrames * 0.68, durationInFrames - 1], [1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return <AbsoluteFill style={{opacity: fade}}>
-    <NetworkStage network={network} localFrame={localFrame} durationInFrames={durationInFrames} opacity={0.18} scale={0.84} translateY={26} />
+    {network && <NetworkStage network={network} localFrame={localFrame} durationInFrames={durationInFrames} opacity={0.18} scale={0.84} translateY={26} />}
     <div style={{position: 'absolute', left: 0, right: 0, top: 392, textAlign: 'center'}}>
       <SectionLabel color={vibeTheme.colors.accent.mutedGold} style={{letterSpacing: '.24em', marginBottom: 22}}>{spec.content.concept}</SectionLabel>
       <Type variant="title" color={vibeTheme.colors.text.secondary} style={{fontSize: 26, fontWeight: 400, letterSpacing: '.04em'}}>{spec.content.summary}</Type>

@@ -30,3 +30,20 @@ Run `npm run render:task004` to render the 1920×1080, 30 FPS, 1800-frame (60-se
 
 Read [docs/COMPONENT_LIBRARY.md](docs/COMPONENT_LIBRARY.md) for the reusable component API, props, examples, and visual rules.
 Read [docs/SCENE_ENGINE.md](docs/SCENE_ENGINE.md) for episode configuration, timeline transitions, scene registry, and subtitle behavior.
+
+## JSON episode quick start (Task 005)
+
+Create new videos through `episodes/*.json`. Copy an existing example and change its content, scene order, durations, geometry or numbers. The engine keeps typography, animation and visual style consistent.
+
+```sh
+npm install
+npm run validate:episodes
+npm run test:episodes
+npm run typecheck
+npm run render:episode -- episodes/braess-paradox.json
+npm run render:episode -- episodes/dollar-auction.json
+```
+
+Outputs: `output/braess-paradox.mp4` (60 seconds) and `output/dollar-auction.mp4` (47.4 seconds). Both are 1920×1080 at 30 FPS, with no audio. `npm run dev` also includes the generic `EpisodeVideo` composition, using Braess as its preview default. Other JSON inputs are supplied by the render command; duration is calculated automatically.
+
+Validate one file with `npm run validate:episode -- episodes/your-episode.json`. Read [EPISODE_FORMAT.md](docs/EPISODE_FORMAT.md) for the complete format, minimal example, scene vocabulary and restrictions. Regenerate the JSON Schema artifact with `npm run schema:episode`. [TASK_005.md](docs/tasks/TASK_005.md) records implementation and actual verification evidence.

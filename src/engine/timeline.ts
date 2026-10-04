@@ -1,6 +1,6 @@
 import type {SceneSpec, SceneTimelineEntry} from './sceneTypes';
 
-const DEFAULT_OVERLAP_FRAMES = 34;
+export const DEFAULT_OVERLAP_FRAMES = 34;
 
 export const buildSceneTimeline = (scenes: readonly SceneSpec[]): SceneTimelineEntry[] => {
   if (scenes.length === 0) return [];

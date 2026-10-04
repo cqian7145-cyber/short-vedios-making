@@ -9,12 +9,11 @@ import {NetworkStage} from './NetworkStage';
 
 export const ExplanationScene: React.FC<SceneComponentProps<ExplanationSceneSpec>> = ({spec, context}) => {
   const network = context.network;
-  if (!network) return null;
-  const focusNode = network.nodes.find((node) => node.id === spec.content.focusNodeId) ?? network.bottleneck;
+  const focusNode = network?.nodes.find((node) => node.id === spec.content.focusNodeId) ?? network?.bottleneck;
   const flowA = 'M 555 500 Q 760 438 1000 540';
   const flowB = 'M 555 635 Q 770 640 1000 540';
   return <AbsoluteFill>
-    <NetworkStage network={network} localFrame={context.localFrame} durationInFrames={context.durationInFrames} opacity={0.22} showAddedEdge scale={0.72} translateX={196} translateY={120} />
+    {network && <NetworkStage network={network} localFrame={context.localFrame} durationInFrames={context.durationInFrames} opacity={0.22} showAddedEdge scale={0.72} translateX={196} translateY={120} />}
     <div style={{position: 'absolute', left: 210, top: 242, maxWidth: 650}}>
       <SectionLabel color={vibeTheme.colors.text.muted} style={{marginBottom: 16}}>{spec.content.individualLabel}</SectionLabel>
       <Type variant="title" style={{fontSize: 34}}>{spec.content.individualStatement}</Type>
