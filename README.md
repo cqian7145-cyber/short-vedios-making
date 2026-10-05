@@ -84,3 +84,17 @@ npm run factory -- --topic "Why can more choices make decisions worse?" --id par
 Run `npm run factory -- --help` for options. Use `--resume` to recover checkpoints, `--skip-render` to build the verified package without MP4, `--draft` to package a clearly labelled blocked draft, and `--force` to start over for the given ID. DeepSeek/Tavily keys are needed only for missing pipeline artifacts. Set them in the shell or a local `.env` file (ignored by Git); `.env.example` contains empty placeholders.
 
 The command writes resumable state and logs to `runs/<id>/`, a release package to `deliveries/<id>/`, deterministic QA stills to `qa/<id>/`, and the rendered MP4 to `output/<id>.mp4`. For 120–180 second episodes, the release gate requires a diversity score of at least 50, at least four archetypes, no repeated archetype run longer than two, network scenes at or below 50%, text-dominant scenes at or below 60%, and a signature moment. The automatic visual-plan quality repair is bounded to one attempt. Remotion stills are produced at representative frames for human review; they are not a claim that a model inspected every pixel. See [FACTORY.md](docs/FACTORY.md) and [TASK_008.md](docs/tasks/TASK_008.md).
+
+## Phase 2 — Recraft Visual System
+
+Phase 2 uses **Recraft only** for generated illustration assets and keeps **Remotion
+as the final compositor** for typography, charts, procedural animation, compositing,
+and MP4 rendering. OpenAI Image, Midjourney, Seedance, and Canva are outside this
+Phase 2 architecture. Phase 1 DeepSeek, Tavily, Research, Fact Pack, and Factory v1
+remain unchanged.
+
+Copy `.env.example` to `.env` and configure secrets locally. Run `npm run phase2:preflight` to see provider configuration state without displaying any values;
+run `npm run recraft:style-status` to check the profile and lock state. The Recraft
+style remains unlocked until real cross-object generations are reviewed. See
+[Phase 2](docs/PHASE2.md), [the Style Bible](docs/PHASE2_VISUAL_STYLE.md), and
+[the evaluation sheet](docs/RECRAFT_STYLE_EVALUATION.md).
