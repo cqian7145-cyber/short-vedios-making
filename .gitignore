@@ -8,6 +8,7 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+.recraft-style.local.json*
 runs/
 deliveries/
 qa/
@@ -22,6 +23,9 @@ generated/
 /assets/style-validation/midnight-scientific-editorial-v1/references/*.png
 /assets/style-validation/midnight-scientific-editorial-v1/*.png
 /assets/style-validation/midnight-scientific-editorial-v1/validation-manifest.json
+/assets/style-validation/midnight-scientific-editorial-v2/references/*.png
+/assets/style-validation/midnight-scientific-editorial-v2/*.png
+/assets/style-validation/midnight-scientific-editorial-v2/validation-manifest.json
 !generated/
 generated/*
 !generated/style-validation/

@@ -4,6 +4,10 @@ export type RecraftAssetType = typeof RECRAFT_ASSET_TYPES[number];
 export type RecraftImageRequest = {
   subject: string;
   composition?: string;
+  physicalStructure?: string;
+  viewpoint?: string;
+  visualRelationship?: string;
+  avoidConcepts?: string[];
   assetType: RecraftAssetType;
   aspectRatio?: string;
   transparentBackground?: boolean;

@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { z } from 'zod';
 import { RECRAFT_API_BASE_URL } from './styleApi';
+import { persistLocalRecraftStyleId } from './config';
 
 const CreateStyleResponseSchema = z.object({ id: z.string().min(1) }).passthrough();
 
@@ -49,4 +50,15 @@ export async function createRecraftStyleFromReferences(
   const parsed = CreateStyleResponseSchema.safeParse(body);
   if (!parsed.success) throw new Error('Recraft custom style response did not contain a valid style identifier.');
   return parsed.data.id;
+}
+
+export async function createAndPersistRecraftStyleFromReferences(
+  apiKey: string,
+  imagePaths: string[],
+  statePath: string,
+  fetchImpl: typeof fetch = fetch,
+): Promise<string> {
+  const styleId = await createRecraftStyleFromReferences(apiKey, imagePaths, fetchImpl);
+  persistLocalRecraftStyleId(styleId, statePath);
+  return styleId;
 }

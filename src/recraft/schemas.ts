@@ -4,6 +4,10 @@ import { RECRAFT_ASSET_TYPES } from './types';
 export const RecraftImageRequestSchema = z.object({
   subject: z.string().trim().min(1).max(1000),
   composition: z.string().trim().min(1).max(1000).optional(),
+  physicalStructure: z.string().trim().min(1).max(500).optional(),
+  viewpoint: z.string().trim().min(1).max(200).optional(),
+  visualRelationship: z.string().trim().min(1).max(500).optional(),
+  avoidConcepts: z.array(z.string().trim().min(1).max(100)).max(8).optional(),
   assetType: z.enum(RECRAFT_ASSET_TYPES),
   aspectRatio: z.string().regex(/^\d{1,2}:\d{1,2}$/).optional(),
   transparentBackground: z.boolean().optional(),
@@ -21,8 +25,8 @@ export const RecraftAssetManifestItemSchema = z.object({
   assetType: z.enum(RECRAFT_ASSET_TYPES),
   subject: z.string().min(1),
   prompt: z.string().min(1).optional(),
-  promptVersion: z.enum(['recraft-style-v1', 'recraft-style-v2']),
-  profileVersion: z.enum(['recraft-v1', 'midnight-scientific-editorial-v1']),
+  promptVersion: z.enum(['recraft-style-v1', 'recraft-style-v2', 'recraft-semantic-v3']),
+  profileVersion: z.enum(['recraft-v1', 'midnight-scientific-editorial-v1', 'midnight-scientific-editorial-v2']),
   filePath: z.string().min(1),
   width: z.number().int().positive(),
   height: z.number().int().positive(),
@@ -87,11 +91,12 @@ export const MidnightStyleAssessmentSchema = z.object({
   reviewer: z.string().min(1),
   humanApprovalStatus: z.enum(['pending', 'approved', 'rejected']),
   embeddedTextRisk: z.enum(['low', 'medium', 'high', 'not-reviewed']),
-  semanticAccuracyScore: z.number().min(0).max(20),
+  semanticReviewStatus: z.enum(['reviewed', 'needs-human-review']),
+  semanticAccuracyScore: z.number().min(0).max(20).nullable(),
   criticalSemanticFailures: z.array(z.string()),
   scoreBreakdown: z.object({
     styleConsistency: z.number().min(0).max(20),
-    semanticAccuracy: z.number().min(0).max(20),
+    semanticAccuracy: z.number().min(0).max(20).nullable(),
     objectClarity: z.number().min(0).max(15),
     characterConsistency: z.number().min(0).max(10),
     iconReadability: z.number().min(0).max(10),
@@ -103,12 +108,13 @@ export const MidnightStyleAssessmentSchema = z.object({
 }).strict();
 
 export const MidnightStyleValidationReportSchema = z.object({
-  profileVersion: z.literal('midnight-scientific-editorial-v1'),
-  profileName: z.literal('Midnight Scientific Editorial v1'),
+  profileVersion: z.literal('midnight-scientific-editorial-v2'),
+  profileName: z.literal('Midnight Scientific Editorial v2'),
   provider: z.literal('recraft'),
   styleConfigured: z.boolean(),
   apiSmokePassed: z.boolean(),
   assetCount: z.number().int().nonnegative(),
+  semanticReviewStatus: z.enum(['reviewed', 'needs-human-review']),
   semanticAccuracyScore: z.number().min(0).max(20).nullable(),
   criticalSemanticFailures: z.array(z.string()),
   scoreBreakdown: z.object({
@@ -126,4 +132,11 @@ export const MidnightStyleValidationReportSchema = z.object({
   humanApprovalStatus: z.enum(['pending', 'approved', 'rejected']),
   warnings: z.array(z.string()),
   styleLocked: z.boolean(),
+}).strict();
+
+export const LocalRecraftStyleStateSchema = z.object({
+  profileVersion: z.literal('recraft-v1'),
+  configured: z.literal(true),
+  createdAt: z.string().datetime(),
+  styleId: z.string().trim().min(1),
 }).strict();

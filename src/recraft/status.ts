@@ -33,6 +33,7 @@ export function formatRecraftStyleStatus(state: RecraftConfigurationState): stri
     RECRAFT_STYLE_PROFILE.version,
     '',
     `API: ${state.apiConfigured ? 'configured' : 'missing'}`,
-    `Style: ${state.styleConfigured ? 'locked' : 'missing'}`,
+    `Style: ${state.styleConfigured ? 'configured' : 'missing'}`,
+    `Style source: ${state.styleSource}`,
   ].join('\n');
 }

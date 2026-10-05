@@ -1,6 +1,7 @@
 import { RecraftConfig } from './config';
 import { RecraftProviderError } from './errors';
 import { RecraftApiResponseSchema, RecraftImageRequestSchema } from './schemas';
+import { buildSemanticPrompt } from './prompts';
 import {
   GeneratedRecraftImage,
   RecraftImageRequest,
@@ -41,9 +42,8 @@ export function mapSemanticRequestToProviderRequest(
     );
   }
 
-  const composition = parsed.data.composition ? ` Composition: ${parsed.data.composition}.` : '';
   return {
-    prompt: `${STYLE_PROMPT_PREFIX} Subject: ${parsed.data.subject}.${composition} Asset type: ${parsed.data.assetType}.`,
+    prompt: `${STYLE_PROMPT_PREFIX} ${buildSemanticPrompt(parsed.data)} NO EMBEDDED TEXT, numbers, or logos.`,
     model: RECRAFT_MODEL,
     style_id: styleId,
     size: parsed.data.aspectRatio ?? '1:1',

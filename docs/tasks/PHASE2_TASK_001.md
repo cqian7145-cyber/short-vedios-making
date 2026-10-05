@@ -22,7 +22,8 @@ Phase 1 Remotion visual system and Factory v1.
 
 ## Acceptance criteria
 
-- [x] Selected style ID is read only from `process.env.RECRAFT_STYLE_ID`.
+- [x] Style ID resolution prefers `process.env.RECRAFT_STYLE_ID`, then ignored local
+  state; neither source is logged or committed.
 - [x] No key or style ID is hard-coded, logged, or stored in tracked metadata.
 - [x] API endpoint/model/format/response documented from official references.
 - [x] Semantic request maps to the provider request through the Recraft provider.
@@ -85,3 +86,28 @@ Completed technical evidence (2026-10-05):
   existing untracked `test-variant.json`.
 - Phase1 Factory regression — covered by the passing Task008 reuse test; no live
   research or provider call was made.
+
+### V2 targeted refinement evidence
+
+Completed (2026-10-05):
+
+- Reference Set V2: six original SVGs (person, steam engine, door, car, gear, geometric
+  symbol); ambiguous auction and branching subjects are not used as style references.
+- Exactly one custom Recraft style was created from these references. Its ID was
+  immediately persisted to ignored `.recraft-style.local.json`; style status reports
+  `local-state` without revealing the ID.
+- Six V2 validation outputs generated. Visual inspection found two critical semantic
+  failures: auction paddle is racket-like; branching topology is not the requested
+  one-input, three-output geometry. Four other assets were recognizable.
+- Semantic accuracy and overall score remain `needs-human-review` / unscored; human
+  approval is pending and `styleLocked=false`.
+- `npm run recraft:score-midnight-style` — passed; reports two failures and no lock.
+- `npm test` — passed, 68 tests; includes mocked Recraft tests and the Task008 Factory
+  reuse regression without provider calls.
+- `npm run typecheck` — passed.
+- `npm run validate:episodes` — passed for Braess Paradox, Dollar Auction, and the
+  existing untracked `test-variant.json`.
+- `npm run phase2:preflight` — DeepSeek, Tavily, Recraft API, and local Style state
+  configured; no IDs or keys displayed.
+- `npm run recraft:style-status` — reports `Style source: local-state` without the ID.
+- No live DeepSeek/Tavily research was called; the stash was left untouched.

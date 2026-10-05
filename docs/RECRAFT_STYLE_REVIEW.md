@@ -90,6 +90,42 @@ generation. The validation command does not update `.env`.
 
 **HUMAN APPROVAL REQUIRED.**
 
+## Task001 V2 refinement
+
+Review `assets/style-validation/midnight-scientific-editorial-v2/`.
+
+- [ ] Reference Set V2 contains person, steam engine, door, car, gear/machine part,
+  and a simple geometric symbol; all six share palette, line language, shading,
+  detail density, silhouette treatment, neutral backgrounds, and no text.
+- [ ] Character feels consistent
+- [ ] Steam engine is readable
+- [ ] Auction paddle is a bidding card on one short handle, not a racket, magnifier,
+  ping-pong paddle, or balance scale
+- [ ] Single door is readable
+- [ ] Factory is one atomic object/building, not a scene
+- [ ] Branching icon is one input and three straight geometric paths, not a tree
+- [ ] Assets fit dark backgrounds and remain suitable for Remotion compositing
+- [ ] No unwanted generated text
+
+The V2 rubric is style consistency /20, semantic accuracy /20, object clarity /15,
+character consistency /10, icon readability /10, dark-background fit /10, and Remotion
+compatibility /15. If semantic identity cannot be assessed reliably, record
+`needs-human-review` and leave its score null. Any wrong object identity is a critical
+failure. Human approval remains required.
+
+The environment `RECRAFT_STYLE_ID` overrides the ignored local
+`.recraft-style.local.json`; CLI output must show only the source, never the identifier.
+
+### V2 preliminary visual inspection (2026-10-05)
+
+All six assets generated using one newly created style. The character, steam engine,
+single door, and factory building are recognizable. The auction paddle still reads as
+a racket-like handled panel, with a glyph-like mark. The branching icon does not match
+the requested left-input, three-output topology. These are two critical semantic
+failures. Semantic accuracy and total score are withheld as `needs-human-review`;
+human approval is pending and `styleLocked=false`. The score assessment and generated
+images remain local and ignored.
+
 ### Automated validation result (2026-10-05)
 
 Six outputs were generated with the new private style. Editorial heuristic: **63/100

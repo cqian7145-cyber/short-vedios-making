@@ -4,7 +4,13 @@ import { access, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promise
 import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
-import { createRecraftStyleFromReferences } from '../src/recraft/createStyle';
+import { createAndPersistRecraftStyleFromReferences } from '../src/recraft/createStyle';
+import {
+  getRecraftConfigurationState,
+  LOCAL_RECRAFT_STYLE_STATE_PATH,
+  resolveRecraftApiKey,
+  resolveRecraftStyleId,
+} from '../src/recraft/config';
 import { safeRecraftError } from '../src/recraft/errors';
 import { MidnightStyleValidationReportSchema, RecraftAssetManifestSchema } from '../src/recraft/schemas';
 import { RECRAFT_STYLE_PROFILE } from '../src/visual/recraftStyleProfile';
@@ -13,30 +19,34 @@ import { RecraftAssetType } from '../src/recraft/types';
 
 const execFileAsync = promisify(execFile);
 const root = process.cwd();
-const profileDir = path.join(root, 'assets/style-validation/midnight-scientific-editorial-v1');
+const profileDir = path.join(root, 'assets/style-validation/midnight-scientific-editorial-v2');
 const referencesDir = path.join(profileDir, 'references');
 const manifestPath = path.join(profileDir, 'validation-manifest.json');
-const reportPath = path.join(root, 'generated/style-validation/midnight-scientific-editorial-v1-report.json');
+const reportPath = path.join(root, 'generated/style-validation/midnight-scientific-editorial-v2-report.json');
 const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 
-type Case = { id: string; subject: string; composition: string; assetType: RecraftAssetType; reference: string };
+type Case = {
+  id: string; subject: string; assetType: RecraftAssetType; reference: string;
+  composition: string; physicalStructure?: string; viewpoint?: string;
+  visualRelationship?: string; avoidConcepts?: string[];
+};
 const cases: Case[] = [
-  { id: '01-character', assetType: 'character', reference: '01-person', subject: 'One standing adult person, neutral pose, simplified full-body silhouette.', composition: 'Single centered figure, arms relaxed, generous space around the body.' },
-  { id: '02-steam-engine', assetType: 'object', reference: '02-steam-engine', subject: 'One recognizable early steam locomotive, three-quarter side view, with boiler, smokestack, and two large wheels.', composition: 'Single isolated machine, fully inside frame, generous space around the silhouette.' },
-  { id: '03-auction-paddle', assetType: 'object', reference: '05-auction-object', subject: 'One classic auction paddle: a small plain rectangular bidding card attached to a short handle.', composition: 'Single isolated auction paddle shown clearly; no coin, no scale, no other objects.' },
-  { id: '04-door', assetType: 'object', reference: '03-door', subject: 'One freestanding simple architectural door with visible frame and handle.', composition: 'Single isolated door viewed straight on, no hallway, no room, no additional doors.' },
-  { id: '05-car', assetType: 'object', reference: '04-car', subject: 'One simple recognizable mid-century automobile, side three-quarter view.', composition: 'Single isolated car, complete silhouette, no road, no scenery, no people.' },
-  { id: '06-branching-symbol', assetType: 'icon', reference: '06-branching-symbol', subject: 'A simple branching-choice symbol: one starting node connected to exactly two endpoint nodes.', composition: 'Three simple circular nodes and two clean branches, isolated centered icon; no leaves, trunk, tree, arrows, text, or extra branches.' },
+  { id: '01-character', assetType: 'character', reference: '01-person', subject: 'One standing adult person.', composition: 'Neutral standing pose, full figure centered and isolated, arms relaxed.' },
+  { id: '02-steam-engine', assetType: 'object', reference: '02-steam-engine', subject: 'One early steam locomotive.', physicalStructure: 'Recognizable cylindrical boiler, smokestack, cab, and two large driving wheels.', viewpoint: 'Three-quarter side view.', composition: 'One complete isolated machine, fully inside frame.' },
+  { id: '03-auction-paddle', assetType: 'object', reference: '05-gear', subject: 'A single auction bidder paddle: a bidding card held by a bidder to place a bid at an auction.', physicalStructure: 'A flat rectangular or rounded-rectangle bidding card attached to one short straight handle.', viewpoint: 'Front-facing.', composition: 'One isolated object; no number and no typography.', avoidConcepts: ['tennis racket', 'ping-pong paddle', 'magnifying glass', 'balance scale'] },
+  { id: '04-door', assetType: 'object', reference: '03-door', subject: 'One freestanding architectural door.', physicalStructure: 'A single door slab inside one visible door frame with one handle.', viewpoint: 'Straight-on view.', composition: 'One isolated door, no hallway, room, or additional doors.' },
+  { id: '05-factory-object', assetType: 'object', reference: '04-car', subject: 'One simplified factory building exterior.', physicalStructure: 'A single industrial building with one visible smokestack and a few simple windows.', viewpoint: 'Three-quarter view.', composition: 'One isolated building object, no landscape, workers, or interior scene.' },
+  { id: '06-branching-choice', assetType: 'icon', reference: '06-geometric-symbol', subject: 'An abstract decision-branching symbol.', visualRelationship: 'One straight input line enters from the left and splits cleanly into exactly three straight geometric paths.', composition: 'Pure diagrammatic geometry, centered, isolated, and readable at small size; no text or labels.', avoidConcepts: ['tree', 'leaves', 'botanical branch', 'plant', 'trunk', 'organic branches'] },
 ];
 
-const promptVersion = 'recraft-style-v2';
+const promptVersion = 'recraft-semantic-v3';
 const timestamp = () => new Date().toISOString();
 const imagePath = (id: string) => path.join(profileDir, `${id}.png`);
 const referencePngPath = (name: string) => path.join(referencesDir, `${name}.png`);
 
 async function rasterizeReferences() {
   await mkdir(referencesDir, { recursive: true });
-  for (const name of ['01-person', '02-steam-engine', '03-door', '04-car', '05-auction-object', '06-branching-symbol']) {
+  for (const name of ['01-person', '02-steam-engine', '03-door', '04-car', '05-gear', '06-geometric-symbol']) {
     const source = path.join(referencesDir, `${name}.svg`);
     const output = referencePngPath(name);
     try {
@@ -80,9 +90,9 @@ async function writeBlockedReport(message: string, generatedCount = 0) {
   const report = MidnightStyleValidationReportSchema.parse({
     profileVersion: RECRAFT_STYLE_PROFILE.version,
     profileName: RECRAFT_STYLE_PROFILE.name,
-    provider: 'recraft', styleConfigured: Boolean(process.env.RECRAFT_STYLE_ID?.trim()),
+    provider: 'recraft', styleConfigured: getRecraftConfigurationState().styleConfigured,
     apiSmokePassed: generatedCount > 0, assetCount: generatedCount,
-    semanticAccuracyScore: null, criticalSemanticFailures: [],
+    semanticReviewStatus: 'needs-human-review', semanticAccuracyScore: null, criticalSemanticFailures: [],
     scoreBreakdown: {
       styleConsistency: null, semanticAccuracy: null, objectClarity: null,
       characterConsistency: null, iconReadability: null, darkBackgroundFit: null,
@@ -96,8 +106,10 @@ async function writeBlockedReport(message: string, generatedCount = 0) {
 }
 
 async function main() {
-  const apiKey = process.env.RECRAFT_API_KEY?.trim();
-  if (!apiKey) {
+  let apiKey: string;
+  try {
+    apiKey = resolveRecraftApiKey();
+  } catch {
     await writeBlockedReport('Missing RECRAFT_API_KEY; no provider request was made.');
     console.error('STYLE VALIDATION BLOCKED: configure RECRAFT_API_KEY locally.');
     process.exitCode = 2;
@@ -119,23 +131,28 @@ async function main() {
 
   let generated = 0;
   const manifestAssets: Array<Record<string, unknown>> = [];
-  let styleId = process.env.RECRAFT_STYLE_ID?.trim();
+  let styleResolution = resolveRecraftStyleId();
   try {
     await rasterizeReferences();
-    if (!styleId) {
-      console.log('Creating a new Recraft custom style from the six original reference assets...');
-      styleId = await createRecraftStyleFromReferences(apiKey, [
-        '01-person', '02-steam-engine', '03-door', '04-car', '05-auction-object', '06-branching-symbol',
-      ].map(referencePngPath));
-      console.log('Custom style created; identifier kept in memory and omitted from output.');
+    if (!styleResolution) {
+      console.log('Creating one Recraft custom style from Reference Set V2...');
+      const styleId = await createAndPersistRecraftStyleFromReferences(apiKey, [
+        '01-person', '02-steam-engine', '03-door', '04-car', '05-gear', '06-geometric-symbol',
+      ].map(referencePngPath), LOCAL_RECRAFT_STYLE_STATE_PATH);
+      styleResolution = { styleId, source: 'local-state' };
+      console.log('New Recraft Style saved to local ignored state. You may optionally copy it into RECRAFT_STYLE_ID in .env.');
     }
 
-    const provider = new RecraftProvider({ apiKey, styleId });
+    const provider = new RecraftProvider({ apiKey, styleId: styleResolution.styleId, styleIdSource: styleResolution.source });
     for (const item of cases) {
       console.log(`Generating atomic validation asset ${item.id}...`);
       const result = await provider.generateImage({
         subject: item.subject,
-        composition: `${item.composition} Quiet neutral background, clean silhouette, negative space. NO EMBEDDED TEXT, numbers, or logos.`,
+        composition: item.composition,
+        physicalStructure: item.physicalStructure,
+        viewpoint: item.viewpoint,
+        visualRelationship: item.visualRelationship,
+        avoidConcepts: item.avoidConcepts,
         assetType: item.assetType,
         aspectRatio: '1:1',
       });
@@ -158,7 +175,7 @@ async function main() {
     console.log(`Validation images generated: ${generated}/6`);
     console.log(`Manifest: ${path.relative(root, manifestPath)}`);
     console.log(`Report: ${path.relative(root, reportPath)}`);
-    console.log('STYLE LOCKED: no; human review and a score of at least 80 with no critical semantic failures are required.');
+    console.log('STYLE LOCKED: no; semantic review and human approval are still required.');
   } catch (error) {
     await writeBlockedReport(`Generation stopped after ${generated}/6 assets: ${safeRecraftError(error)}`, generated);
     console.error(`STYLE VALIDATION FAILED: ${safeRecraftError(error)}`);
