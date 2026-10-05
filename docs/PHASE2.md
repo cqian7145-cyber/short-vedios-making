@@ -1,48 +1,53 @@
 # Phase 2 — Recraft Visual System
 
-Phase 2 adds a reusable illustration identity for the Vibe Knowledge Video Engine.
-Recraft is the sole external visual generation provider. Remotion remains the final
-compositor and owns typography, data visualization, charts, formulas, animation,
-camera movement, compositing, and MP4 rendering.
+Phase 2 uses Recraft as the only external visual generation provider and Remotion as
+the final compositor and renderer. Recraft creates illustrations, icons, objects,
+characters, and scene plates. Remotion owns typography, charts, formulas, procedural
+animation, camera motion, compositing, and final MP4 rendering.
 
-The division of work is fixed:
+OpenAI Image, Midjourney, Seedance, and Canva are outside this architecture. DeepSeek,
+Tavily, Research, Fact Pack, and Factory v1 remain Phase 1 services and do not depend
+on Recraft.
 
-- **Recraft:** illustrations, objects, icons, and scene plates.
-- **Remotion:** type, charts, procedural motion, camera movement, and final video.
+## Selected profile
 
-OpenAI Image, Midjourney, Seedance, and Canva are outside the current Phase 2
-architecture. DeepSeek, Tavily, Research, Fact Pack, and Factory v1 remain unchanged.
+Phase 2 v1 uses the user-selected Recraft style and the non-secret profile
+`Selected Editorial Scientific Style` (`recraft-v1`). The style identifier is read
+only from `RECRAFT_STYLE_ID` at runtime. It is never stored in tracked files, output
+metadata, or logs.
 
-## Phase 2 roadmap
+Phase 1 keeps its dark academic/editorial world: near-black or dark navy background,
+ivory typography, restrained gold highlights, technical diagrams, negative space,
+and slow cinematic motion. Recraft supplies visual subjects. Remotion adds information
+and motion around those subjects.
 
-- **V2-01 — Recraft visual identity:** style bible, local reference studies,
-  configuration status, and eventual custom style lock.
-- **V2-02 — Asset generation:** controlled Recraft API asset generation.
-- **V2-03 — Asset normalization:** prepare assets for predictable compositing.
-- **V2-04 — Remotion scene integration:** combine generated assets with procedural
-  visualizations and motion.
-- **V2-05 — Visual quality checks:** validate readability and asset suitability.
-- **V2-06 — Episode asset mapping:** connect approved assets to episode scenes.
-- **V2-07 — Factory v2:** orchestrate the verified asset-to-video pipeline.
+## Commands
 
-## Configuration
+- `npm run phase2:preflight` — configuration state only; no secrets are printed.
+- `npm run recraft:style-status` — selected profile and locked/missing status.
+- `npm run recraft:validate-style` — one smoke image, then six cross-category images
+  when both Recraft settings are present. Use `--force` only when intentionally
+  replacing existing paid outputs.
 
-Copy `.env.example` to `.env` and fill values locally. The tracked template contains
-only empty secret placeholders. `npm run phase2:preflight` reports only whether each
-provider and style is configured; it never prints credentials or a style ID.
-`npm run recraft:style-status` reports the non-secret profile name/version and whether
-the style is locked.
+Generated validation images are local and ignored by Git. The manifest and style
+report do not contain credentials or the style identifier. A generated image set
+remains `needs-review` until the assets are checked against the human review sheet.
+An API response alone never locks a style.
 
-Recraft remains unlocked until candidate outputs have passed cross-object evaluation
-and the resulting real style ID is supplied locally. No style ID is stored in tracked
-source or documentation.
+## V2 roadmap
 
-## Official Recraft references
+- V2-01 — locked-style provider foundation and validation.
+- V2-02 — episode asset strategy and controlled asset generation.
+- V2-03 — asset normalization and compositing.
+- V2-04 — Remotion hybrid scenes.
+- V2-05 — visual quality and similarity checks.
+- V2-06 — cross-episode asset reuse.
+- V2-07 — Factory v2.
 
-- [API endpoints](https://www.recraft.ai/docs/api-reference/endpoints)
-- [Custom styles](https://www.recraft.ai/docs/api-reference/styles)
+## Official API references
+
+- [Recraft generation endpoints](https://www.recraft.ai/docs/api-reference/endpoints)
+- [Image inputs and results](https://www.recraft.ai/docs/api-reference/image-inputs-and-results)
 - [Recraft V4 Styles](https://www.recraft.ai/docs/api-reference/models/recraft-v4-styles)
-
-The current official style documentation describes custom styles created from
-reference images and use through a style ID/style reference. API usage for V2-02 is
-intentionally outside this task.
+- [Style matching](https://www.recraft.ai/docs/api-reference/styles)
+- Detailed implementation notes: [RECRAFT_API_NOTES.md](RECRAFT_API_NOTES.md).

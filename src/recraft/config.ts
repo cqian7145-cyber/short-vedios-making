@@ -6,45 +6,34 @@ export type RecraftEnvironment = {
 export type RecraftConfigurationState = {
   apiConfigured: boolean;
   styleConfigured: boolean;
-  styleStatus: 'locked' | 'unlocked';
 };
 
 export type RecraftConfig = {
   apiKey: string;
-  styleId?: string;
-  styleStatus: 'locked' | 'unlocked';
+  styleId: string;
 };
 
 export function getRecraftConfigurationState(
   env: RecraftEnvironment = process.env,
 ): RecraftConfigurationState {
-  const apiConfigured = Boolean(env.RECRAFT_API_KEY?.trim());
-  const styleConfigured = Boolean(env.RECRAFT_STYLE_ID?.trim());
-
   return {
-    apiConfigured,
-    styleConfigured,
-    styleStatus: styleConfigured ? 'locked' : 'unlocked',
+    apiConfigured: Boolean(env.RECRAFT_API_KEY?.trim()),
+    styleConfigured: Boolean(env.RECRAFT_STYLE_ID?.trim()),
   };
 }
 
 export function resolveRecraftConfig(
   env: RecraftEnvironment = process.env,
-  options: { requireStyleId?: boolean } = {},
 ): RecraftConfig {
   const apiKey = env.RECRAFT_API_KEY?.trim();
   if (!apiKey) {
-    throw new Error('Recraft is not configured: set RECRAFT_API_KEY in your local .env file.');
+    throw new Error('Missing required environment variable: RECRAFT_API_KEY');
   }
 
   const styleId = env.RECRAFT_STYLE_ID?.trim();
-  if (options.requireStyleId && !styleId) {
-    throw new Error('Recraft style is not locked: set RECRAFT_STYLE_ID after style evaluation.');
+  if (!styleId) {
+    throw new Error('Missing required environment variable: RECRAFT_STYLE_ID');
   }
 
-  return {
-    apiKey,
-    ...(styleId ? { styleId } : {}),
-    styleStatus: styleId ? 'locked' : 'unlocked',
-  };
+  return { apiKey, styleId };
 }

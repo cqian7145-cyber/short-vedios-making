@@ -17,19 +17,22 @@ export function formatPhase2Preflight(state: Phase2PreflightState): string {
     '',
     'Phase 2:',
     `Recraft API    ${yesNo(state.recraft.apiConfigured)}`,
-    `Recraft Style  ${state.recraft.styleStatus === 'locked' ? '✓ locked' : '✗ not locked'}`,
+    `Recraft Style  ${state.recraft.styleConfigured ? '✓ configured' : '✗ missing'}`,
   ].join('\n');
 }
 
 export function formatRecraftStyleStatus(state: RecraftConfigurationState): string {
   return [
-    'Visual profile:',
+    'Provider:',
+    'Recraft',
+    '',
+    'Profile:',
     RECRAFT_STYLE_PROFILE.name,
     '',
     'Profile version:',
     RECRAFT_STYLE_PROFILE.version,
     '',
     `API: ${state.apiConfigured ? 'configured' : 'missing'}`,
-    `Style: ${state.styleStatus}`,
+    `Style: ${state.styleConfigured ? 'locked' : 'missing'}`,
   ].join('\n');
 }

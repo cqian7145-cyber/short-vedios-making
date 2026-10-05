@@ -87,14 +87,15 @@ The command writes resumable state and logs to `runs/<id>/`, a release package t
 
 ## Phase 2 — Recraft Visual System
 
-Phase 2 uses **Recraft only** for generated illustration assets and keeps **Remotion
-as the final compositor** for typography, charts, procedural animation, compositing,
-and MP4 rendering. OpenAI Image, Midjourney, Seedance, and Canva are outside this
-Phase 2 architecture. Phase 1 DeepSeek, Tavily, Research, Fact Pack, and Factory v1
-remain unchanged.
+Phase 2 uses **Recraft only** for visual assets and keeps **Remotion as the final
+compositor** for typography, charts, formulas, procedural animation, camera motion,
+compositing, and MP4 rendering. OpenAI Image, Midjourney, Seedance, and Canva are
+outside this architecture. Phase 1 DeepSeek, Tavily, Research, Fact Pack, and Factory
+v1 remain unchanged.
 
 Copy `.env.example` to `.env` and configure secrets locally. Run `npm run phase2:preflight` to see provider configuration state without displaying any values;
-run `npm run recraft:style-status` to check the profile and lock state. The Recraft
-style remains unlocked until real cross-object generations are reviewed. See
-[Phase 2](docs/PHASE2.md), [the Style Bible](docs/PHASE2_VISUAL_STYLE.md), and
-[the evaluation sheet](docs/RECRAFT_STYLE_EVALUATION.md).
+run `npm run recraft:style-status` to check the profile and lock state. Run
+`npm run recraft:validate-style` for a one-image smoke and six-image validation set;
+generated assets stay local and ignored by Git. An API response does not by itself
+approve the style. See [Phase 2](docs/PHASE2.md), [API notes](docs/RECRAFT_API_NOTES.md),
+and [the human review sheet](docs/RECRAFT_STYLE_REVIEW.md).

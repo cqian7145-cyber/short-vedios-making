@@ -1,0 +1,36 @@
+{
+  "profileVersion": "recraft-v1",
+  "profileName": "Selected Editorial Scientific Style",
+  "provider": "recraft",
+  "apiSmokePassed": true,
+  "assetCount": 6,
+  "characterConsistency": 60,
+  "objectConsistency": 40,
+  "sceneConsistency": 60,
+  "iconConsistency": 20,
+  "darkBackgroundCompatibility": 27,
+  "remotionCompatibility": 33,
+  "embeddedTextRisk": "low",
+  "scoreBreakdown": {
+    "styleConsistency": 12,
+    "objectClarity": 6,
+    "characterConsistency": 6,
+    "sceneCompatibility": 6,
+    "iconReadability": 2,
+    "darkBackgroundFit": 4,
+    "remotionCompatibility": 5
+  },
+  "overallScore": 41,
+  "status": "rejected",
+  "humanApproval": "required",
+  "humanApprovalStatus": "pending",
+  "warnings": [
+    "Visible style drift across categories: character/corridor/steam assets are cinematic and textured, factory is flat-vector, and the choice icon is decorative and unrelated in rendering.",
+    "The auction request produced a balance scale rather than the requested paddle and coin.",
+    "The choice icon produced a full-frame tree-and-scales composition rather than a compact branching-choice icon.",
+    "Most files use full-frame pale or busy backgrounds; no transparent-background parameter is documented for this generation endpoint.",
+    "The smoke steam-engine subject is tightly cropped with machinery extending beyond the image; negative space is poor.",
+    "No obvious embedded words or labels were visible in the six inspected images."
+  ],
+  "styleLocked": false
+}

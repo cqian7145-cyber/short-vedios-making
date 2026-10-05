@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "recraft-asset-manifest-v1",
+  "assets": [
+    {
+      "id": "smoke-steam-engine",
+      "provider": "recraft",
+      "assetType": "object",
+      "subject": "A simple mechanical steam engine, three-quarter side view",
+      "promptVersion": "recraft-style-v1",
+      "profileVersion": "recraft-v1",
+      "filePath": "assets/style-validation/recraft-v1/smoke-steam-engine.png",
+      "width": 1024,
+      "height": 1024,
+      "createdAt": "2026-10-05T05:27:13.993Z",
+      "prompt": "Use the configured Recraft Style as the visual authority. Generate a clean editorial asset with a clear silhouette, strong visual hierarchy, large negative space, restrained detail, and suitability for dark-background compositing. NO EMBEDDED TEXT. Subject and composition instructions define what to show; do not override the configured Style. Subject: A simple mechanical steam engine, three-quarter side view. Composition: Clear recognizable silhouette, isolated composition, large negative space.. Asset type: object."
+    },
+    {
+      "id": "01-character",
+      "provider": "recraft",
+      "assetType": "character",
+      "subject": "A simplified person standing before several choices, neutral pose, no facial detail",
+      "prompt": "Use the configured Recraft Style as the visual authority. Generate a clean editorial asset with a clear silhouette, strong visual hierarchy, large negative space, restrained detail, and suitability for dark-background compositing. NO EMBEDDED TEXT. Subject and composition instructions define what to show; do not override the configured Style. Subject: A simplified person standing before several choices, neutral pose, no facial detail. Composition: Full body centered with generous clear space around the silhouette.. Asset type: character.",
+      "promptVersion": "recraft-style-v1",
+      "profileVersion": "recraft-v1",
+      "filePath": "assets/style-validation/recraft-v1/01-character.png",
+      "width": 1024,
+      "height": 1024,
+      "createdAt": "2026-10-05T05:29:12.87Z"
+    },
+    {
+      "id": "02-steam-engine",
+      "provider": "recraft",
+      "assetType": "object",
+      "subject": "A simple mechanical steam engine, three-quarter side view",
+      "prompt": "Use the configured Recraft Style as the visual authority. Generate a clean editorial asset with a clear silhouette, strong visual hierarchy, large negative space, restrained detail, and suitability for dark-background compositing. NO EMBEDDED TEXT. Subject and composition instructions define what to show; do not override the configured Style. Subject: A simple mechanical steam engine, three-quarter side view. Composition: Isolated subject, clear recognizable silhouette, large negative space.. Asset type: object.",
+      "promptVersion": "recraft-style-v1",
+      "profileVersion": "recraft-v1",
+      "filePath": "assets/style-validation/recraft-v1/02-steam-engine.png",
+      "width": 1024,
+      "height": 1024,
+      "createdAt": "2026-10-05T05:29:19.139Z"
+    },
+    {
+      "id": "03-auction",
+      "provider": "recraft",
+      "assetType": "object",
+      "subject": "An auction paddle beside a single plain coin",
+      "prompt": "Use the configured Recraft Style as the visual authority. Generate a clean editorial asset with a clear silhouette, strong visual hierarchy, large negative space, restrained detail, and suitability for dark-background compositing. NO EMBEDDED TEXT. Subject and composition instructions define what to show; do not override the configured Style. Subject: An auction paddle beside a single plain coin. Composition: Two clearly separated objects in a balanced isolated composition.. Asset type: object.",
+      "promptVersion": "recraft-style-v1",
+      "profileVersion": "recraft-v1",
+      "filePath": "assets/style-validation/recraft-v1/03-auction.png",
+      "width": 1024,
+      "height": 1024,
+      "createdAt": "2026-10-05T05:29:25.256Z"
+    },
+    {
+      "id": "04-door-corridor",
+      "provider": "recraft",
+      "assetType": "scene-plate",
+      "subject": "A long corridor with several doors",
+      "prompt": "Use the configured Recraft Style as the visual authority. Generate a clean editorial asset with a clear silhouette, strong visual hierarchy, large negative space, restrained detail, and suitability for dark-background compositing. NO EMBEDDED TEXT. Subject and composition instructions define what to show; do not override the configured Style. Subject: A long corridor with several doors. Composition: Strong one-point perspective, clean composition, broad negative space.. Asset type: scene-plate.",
+      "promptVersion": "recraft-style-v1",
+      "profileVersion": "recraft-v1",
+      "filePath": "assets/style-validation/recraft-v1/04-door-corridor.png",
+      "width": 1820,
+      "height": 1024,
+      "createdAt": "2026-10-05T05:29:33.567Z"
+    },
+    {
+      "id": "05-factory",
+      "provider": "recraft",
+      "assetType": "scene-plate",
+      "subject": "A simplified factory with visible machinery and a flow of energy",
+      "prompt": "Use the configured Recraft Style as the visual authority. Generate a clean editorial asset with a clear silhouette, strong visual hierarchy, large negative space, restrained detail, and suitability for dark-background compositing. NO EMBEDDED TEXT. Subject and composition instructions define what to show; do not override the configured Style. Subject: A simplified factory with visible machinery and a flow of energy. Composition: Clear geometric structure and focal hierarchy, sparse background detail.. Asset type: scene-plate.",
+      "promptVersion": "recraft-style-v1",
+      "profileVersion": "recraft-v1",
+      "filePath": "assets/style-validation/recraft-v1/05-factory.png",
+      "width": 1820,
+      "height": 1024,
+      "createdAt": "2026-10-05T05:29:43.283Z"
+    },
+    {
+      "id": "06-choice-icon",
+      "provider": "recraft",
+      "assetType": "icon",
+      "subject": "A simple decision symbol representing branching choices",
+      "prompt": "Use the configured Recraft Style as the visual authority. Generate a clean editorial asset with a clear silhouette, strong visual hierarchy, large negative space, restrained detail, and suitability for dark-background compositing. NO EMBEDDED TEXT. Subject and composition instructions define what to show; do not override the configured Style. Subject: A simple decision symbol representing branching choices. Composition: Isolated centered icon with high readability at small size.. Asset type: icon.",
+      "promptVersion": "recraft-style-v1",
+      "profileVersion": "recraft-v1",
+      "filePath": "assets/style-validation/recraft-v1/06-choice-icon.png",
+      "width": 1024,
+      "height": 1024,
+      "createdAt": "2026-10-05T05:29:58.753Z"
+    }
+  ]
+}

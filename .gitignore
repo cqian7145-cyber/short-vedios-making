@@ -14,3 +14,14 @@ qa/
 **/factory.log
 generated/
 /research/
+/assets/style-validation/recraft-v1/*.png
+/assets/style-validation/recraft-v1/*.webp
+/assets/style-validation/recraft-v1/*.jpg
+/assets/style-validation/recraft-v1/*.jpeg
+/assets/style-validation/recraft-v1/*.svg
+!generated/
+generated/*
+!generated/style-validation/
+generated/style-validation/*
+!generated/style-validation/recraft-v1-report.json
+!generated/style-validation/recraft-v1-assessment.json

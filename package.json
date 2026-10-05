@@ -19,6 +19,8 @@
     "generate:verified": "tsx scripts/generate-verified.ts",
     "phase2:preflight": "tsx scripts/phase2-preflight.ts",
     "recraft:style-status": "tsx scripts/recraft-style-status.ts",
+    "recraft:validate-style": "tsx scripts/validate-recraft-style.ts",
+    "recraft:score-style": "tsx scripts/score-recraft-style.ts",
     "validate:episode": "tsx scripts/validate-episode.ts",
     "validate:episodes": "tsx scripts/validate-episodes.ts",
     "test:episodes": "tsx --test src/episode/episode.test.ts",

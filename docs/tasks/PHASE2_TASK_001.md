@@ -1,55 +1,51 @@
-# Phase 2 Task V2-01 — Recraft Visual Identity
+# Phase 2 Task V2-01 — Locked Recraft Style Validation
 
 ## Goal
 
-Establish the Tech Blue Editorial visual language, secure local Recraft configuration
-handling, and prepare a measured process for selecting and locking a reusable custom
-style without changing Phase 1 generation/research/factory behavior.
-
-## Requirements
-
-- Recraft is the only external visual generation provider; Remotion remains compositor.
-- Preserve Phase 1 dark academic background, ivory typography, and restrained gold.
-- Keep keys and style ID out of tracked files, logs, and status output.
-- Keep Recraft style unlocked until genuine cross-object output review passes.
-- Add offline tests and Phase 2 documentation; do not implement V2-02 asset generation.
+Validate the user-selected Recraft style across a controlled smoke and six asset
+categories, record evidence without leaking credentials/style ID, and preserve the
+Phase 1 Remotion visual system and Factory v1.
 
 ## Implementation
 
-- Added strict non-secret profile at `src/visual/recraftStyleProfile.ts`.
-- Added `src/recraft/config.ts` and two status commands. Missing style ID is valid while
-  the profile is unlocked; callers can require it explicitly for a locked workflow.
-- Added `prompts/recraft-style-v1.md`, the Phase 2 Style Bible, candidate rubric, and
-  setup documentation.
-- Kept the DeepSeek/Tavily/research/factory implementations untouched.
+- Added the non-secret `recraft-v1` profile and required-key/style config resolver.
+- Added an HTTP Recraft provider using the official image-generation endpoint, a fixed
+  style-driven model, request/response schemas, and redacted provider errors.
+- Added a semantic asset contract, future-safe manifest schema, validation runner,
+  report schema, and human review sheet.
+- Recraft asset images are ignored by Git; manifest and report omit secret values.
+- Recraft remains optional to Phase 1 / Factory v1.
 
 ## Acceptance criteria
 
-- [x] Exact empty-placeholder `.env.example` and `.env` ignore rules.
-- [x] Phase 2 profile has no API key or style ID.
-- [x] Preflight/status disclose only configured/missing and locked/unlocked.
-- [x] Candidate directions and a >=80 provisional direction score are documented.
-- [ ] Recraft-generated cross-object consistency evaluation reaches >=80.
-- [ ] Real Recraft style ID is locked locally after that evaluation.
-- [x] Offline tests cover configuration and profile validation.
-- [x] Existing regression commands pass.
+- [x] Selected style ID is read only from `process.env.RECRAFT_STYLE_ID`.
+- [x] No key or style ID is hard-coded, logged, or stored in tracked metadata.
+- [x] API endpoint/model/format/response documented from official references.
+- [x] Semantic request maps to the provider request through the Recraft provider.
+- [x] Offline tests use injected mock fetch only.
+- [x] Real one-image smoke succeeds.
+- [x] All six validation assets are generated and visually assessed.
+- [x] Editorial score recorded; result is rejected at 41/100 and style remains unlocked.
+- [ ] Final human approval recorded.
+- [x] Phase 1 tests, episode validation, and Factory v1 regression pass.
 
 ## Evidence
 
-Commands run:
+Commands and outcomes:
 
+- `npm run phase2:preflight` — DeepSeek, Tavily, Recraft API, and Recraft Style report
+  configured; no values printed.
+- `npm run recraft:style-status` — selected profile, API configured, Style locked; no
+  identifier printed.
+- `npm run recraft:validate-style` — smoke passed and generated six validation PNGs.
+- `npm run recraft:score-style` — rejected; editorial heuristic 41/100; human approval
+  pending; `styleLocked=false`.
 - `npm run typecheck` — passed.
-- `npm test` — passed, 55 tests.
-- `npm run validate:episodes` — passed for the tracked examples and existing local
-  `episodes/test-variant.json`.
-- `npm run phase2:preflight` — DeepSeek/Tavily configured; Recraft missing; style not
-  locked. Output contained status only.
-- `npm run recraft:style-status` — profile `Tech Blue Editorial`, version `recraft-v1`,
-  API missing, style unlocked.
-- `git diff --check` — passed (Git reported only expected line-ending normalization
-  warnings for existing Windows working tree settings).
+- `npm test` — passed, 61 tests.
+- `npm run validate:episodes` — passed.
+- Factory v1 regression — existing Task008 test reused Task007 artifacts without
+  provider calls; Recraft is not a Factory v1 dependency.
 
-The five files under `assets/style/recraft-v1/` are original local SVG reference
-studies, not Recraft outputs. Candidate C has a provisional written-direction score of
-89/100; actual Recraft cross-object evaluation and real Style ID lock remain pending
-because the local Recraft API key is missing. No Recraft API request was made.
+Images are ignored by Git; the manifest and score/report contain no API key or Style
+ID. The original A/B/C studies from the prior exploratory task were removed so the
+selected style is the sole Phase 2 v1 profile.
