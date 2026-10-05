@@ -6,11 +6,17 @@ import { RecraftProviderError, safeRecraftError } from '../src/recraft/errors';
 import { formatPhase2Preflight, formatRecraftStyleStatus } from '../src/recraft/status';
 import {
   RecraftAssetManifestSchema,
+  MidnightStyleAssessmentSchema,
+  MidnightStyleValidationReportSchema,
   RecraftStyleValidationReportSchema,
 } from '../src/recraft/schemas';
 import { calculateStyleScore, createPendingStyleReport, styleLockEligible } from '../src/recraft/styleValidation';
 import { mapSemanticRequestToProviderRequest, RecraftProvider, RECRAFT_GENERATION_ENDPOINT } from '../src/recraft/RecraftProvider';
 import { RECRAFT_STYLE_PROFILE, RecraftStyleProfileSchema } from '../src/visual/recraftStyleProfile';
+import { createRecraftStyleFromReferences } from '../src/recraft/createStyle';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 
 test('dotenv configuration is represented by flags only', () => {
   const env = parse('DEEPSEEK_API_KEY=dummy-deepseek\nTAVILY_API_KEY=dummy-tavily\nRECRAFT_API_KEY=dummy-recraft\nRECRAFT_STYLE_ID=dummy-style');
@@ -41,7 +47,7 @@ test('preflight and style status never print credentials or the style identifier
   });
   const output = `${formatPhase2Preflight({ deepseekConfigured: true, tavilyConfigured: true, recraft: state })}\n${formatRecraftStyleStatus(state)}`;
   assert.match(output, /Provider:\nRecraft/);
-  assert.match(output, /Profile:\nSelected Editorial Scientific Style/);
+  assert.match(output, /Profile:\nMidnight Scientific Editorial v1/);
   assert.match(output, /Style: locked/);
   assert.doesNotMatch(output, /api-secret-sentinel|private-style-sentinel/);
 });
@@ -49,7 +55,7 @@ test('preflight and style status never print credentials or the style identifier
 test('profile schema is non-secret and matches the selected profile contract', () => {
   assert.equal(RecraftStyleProfileSchema.safeParse(RECRAFT_STYLE_PROFILE).success, true);
   assert.equal(RecraftStyleProfileSchema.safeParse({ ...RECRAFT_STYLE_PROFILE, styleId: 'not-allowed' }).success, false);
-  assert.deepEqual(RECRAFT_STYLE_PROFILE.preferredUsage, ['objects', 'icons', 'characters', 'scene-plates']);
+  assert.deepEqual(RECRAFT_STYLE_PROFILE.preferredUsage, ['objects', 'icons', 'characters']);
 });
 
 test('semantic image request maps to official Recraft generation fields and locked style', () => {
@@ -131,17 +137,79 @@ test('manifest schema accepts runtime metadata and excludes provider credentials
   assert.equal(RecraftAssetManifestSchema.safeParse({ schemaVersion: 'recraft-asset-manifest-v1', assets: [], styleId: 'secret' }).success, false);
 });
 
-test('pending report is truthful and score threshold does not bypass human approval', () => {
+test('new score includes semantic accuracy and blocks critical failures and missing human approval', () => {
   const report = createPendingStyleReport(['not run']);
   assert.equal(RecraftStyleValidationReportSchema.safeParse(report).success, true);
   assert.equal(report.overallScore, null);
   assert.equal(report.styleLocked, false);
   assert.equal(calculateStyleScore({
-    styleConsistency: 22, objectClarity: 13, characterConsistency: 8, sceneCompatibility: 9,
-    iconReadability: 8, darkBackgroundFit: 13, remotionCompatibility: 13,
-  }), 86);
-  assert.equal(styleLockEligible(86, true, 6, false), false);
-  assert.equal(styleLockEligible(86, true, 6, true), true);
+    styleConsistency: 18, semanticAccuracy: 19, objectClarity: 13, characterConsistency: 8,
+    iconReadability: 8, darkBackgroundFit: 8, remotionCompatibility: 13,
+  }), 87);
+  assert.equal(styleLockEligible(87, true, 6, false, 0), false);
+  assert.equal(styleLockEligible(87, true, 6, true, 1), false);
+  assert.equal(styleLockEligible(87, true, 6, true, 0, true), true);
+  assert.equal(styleLockEligible(87, true, 6, true, 0, false), false);
+});
+
+test('new report schema requires semantic accuracy and supports critical failure records', () => {
+  const report = {
+    profileVersion: 'midnight-scientific-editorial-v1',
+    profileName: 'Midnight Scientific Editorial v1', provider: 'recraft',
+    styleConfigured: false, apiSmokePassed: true, assetCount: 6, semanticAccuracyScore: 12,
+    criticalSemanticFailures: ['03-auction-paddle'],
+    scoreBreakdown: {
+      styleConsistency: 11, semanticAccuracy: 12, objectClarity: 11,
+      characterConsistency: 8, iconReadability: 4, darkBackgroundFit: 8,
+      remotionCompatibility: 9,
+    },
+    overallScore: 63, status: 'rejected', humanApproval: 'required',
+    humanApprovalStatus: 'pending', warnings: [], styleLocked: false,
+  };
+  assert.equal(MidnightStyleValidationReportSchema.safeParse(report).success, true);
+  assert.equal(MidnightStyleValidationReportSchema.safeParse({ ...report, semanticAccuracyScore: undefined }).success, false);
+  assert.equal(MidnightStyleAssessmentSchema.safeParse({
+    reviewType: 'editorial-heuristic', reviewer: 'mock', humanApprovalStatus: 'pending',
+    embeddedTextRisk: 'low', semanticAccuracyScore: 12,
+    criticalSemanticFailures: ['03-auction-paddle'],
+    scoreBreakdown: report.scoreBreakdown, warnings: [], notes: [],
+  }).success, true);
+});
+
+test('custom style creation sends local references to the official multipart API without logging its id', async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'recraft-style-test-'));
+  try {
+    const images = await Promise.all(Array.from({ length: 6 }, async (_, index) => {
+      const file = path.join(directory, `${index}.png`);
+      await writeFile(file, Buffer.from(`png-${index}`));
+      return file;
+    }));
+    let requestUrl = '';
+    let requestHeaders: Headers | undefined;
+    let requestBody: FormData | undefined;
+    const mockFetch: typeof fetch = async (input, init) => {
+      requestUrl = String(input);
+      requestHeaders = new Headers(init?.headers);
+      requestBody = init?.body as FormData;
+      return new Response(JSON.stringify({ id: 'private-style-sentinel', model: 'recraftv3' }), { status: 200 });
+    };
+    const id = await createRecraftStyleFromReferences('api-key-sentinel', images, mockFetch);
+    assert.equal(id, 'private-style-sentinel');
+    assert.equal(requestUrl, 'https://external.api.recraft.ai/v1/styles');
+    assert.equal(requestHeaders?.get('authorization'), 'Bearer api-key-sentinel');
+    assert.equal(requestBody?.get('model'), 'recraftv3');
+    assert.equal(requestBody?.get('style'), 'digital_illustration');
+    assert.equal(requestBody?.get('match'), 'regular');
+    for (let index = 1; index <= 6; index += 1) assert.ok(requestBody?.get(`file${index}`));
+    await assert.rejects(
+      () => createRecraftStyleFromReferences('api-key-sentinel', images, async () => new Response(
+        JSON.stringify({ error: 'api-key-sentinel private-style-sentinel' }), { status: 403 },
+      )),
+      /^Error: Recraft custom style creation failed \(HTTP 403\)\.$/,
+    );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 test('this suite uses an injected fetch and never requires real Recraft credentials', () => {

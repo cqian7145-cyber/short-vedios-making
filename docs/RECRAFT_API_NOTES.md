@@ -22,8 +22,28 @@ Verified against Recraft's official API documentation on 2026-10-05.
   documented generation examples; this implementation uses a single direct HTTP request.
 
 The provider never logs the Authorization header, API key, style identifier, or raw
-response body. HTTP failures report status only. The user-selected style ID itself is
-intentionally omitted from these notes.
+response body. HTTP failures report status only. The style ID is intentionally
+omitted from these notes.
+
+## Midnight Scientific Editorial v1 custom style
+
+Verified against the current official documentation on 2026-10-05:
+
+- **Create-style endpoint:** `POST https://external.api.recraft.ai/v1/styles`.
+- **Upload:** multipart image parts `file1` through `file6`; supported inputs are PNG,
+  JPG, and WEBP, up to 10 references, 64 MB total and under 10 MB each.
+- **Create-style fields:** `model=recraftv3`, `style=digital_illustration`,
+  `match=regular`, and a short style description prompt. These documented values bind
+  the created style to the same model family used by the existing provider.
+- **Response:** the API returns an `id`; code keeps it only in memory and does not
+  persist, report, or log it. This task does not read or write `.env` directly.
+- **Validation generation:** existing `/v1/images/generations` request contract,
+  `recraftv3`, `style_id`, ratio `1:1`, PNG output, and base64 response remain intact.
+
+Current authoritative API references:
+[styles](https://www.recraft.ai/docs/api-reference/styles),
+[create-style and generation endpoint fields](https://www.recraft.ai/docs/api-reference/endpoints),
+[Recraft V4 Styles overview](https://www.recraft.ai/docs/api-reference/models/recraft-v4-styles).
 
 Sources: [endpoints](https://www.recraft.ai/docs/api-reference/endpoints),
 [image inputs/results](https://www.recraft.ai/docs/api-reference/image-inputs-and-results),

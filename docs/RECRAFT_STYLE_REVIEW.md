@@ -51,3 +51,49 @@ scale; the branching-choice icon became a full-frame tree-and-scales scene; most
 have pale or busy full-frame backgrounds; the smoke engine is cropped. No obvious
 embedded words or labels were visible. Details are recorded in the local assessment and
 report JSON.
+
+## Midnight Scientific Editorial v1 — Task001 follow-up
+
+Review the six atomic outputs in
+`assets/style-validation/midnight-scientific-editorial-v1/` at full size and at typical
+video display size. A semantic mismatch (especially a scale instead of an auction
+paddle, or a tree instead of a two-way choice symbol) is a critical failure.
+
+- [ ] Person remains a simple, readable character
+- [ ] Steam locomotive is recognizable and fully framed
+- [ ] Auction paddle is visibly a bidding paddle, not a scale
+- [ ] Single door reads clearly without a full corridor scene
+- [ ] Car silhouette is recognizable
+- [ ] Choice icon has one start, two branches, and two endpoints
+- [ ] Six outputs share the same palette, line treatment, and detail density
+- [ ] Every subject has clear edges and contrast on near-black/navy
+- [ ] Outputs are isolated and usable as Remotion layers
+- [ ] No unwanted embedded words, numbers, or logos
+
+| Asset | Semantic accuracy | Silhouette/edge | Dark fit | Style consistency | Critical failure |
+| --- | --- | --- | --- | --- | --- |
+| Person | | | | | |
+| Steam engine | | | | | |
+| Auction paddle | | | | | |
+| Door | | | | | |
+| Car | | | | | |
+| Branching symbol | | | | | |
+
+The new editorial rubric is style consistency /20, semantic accuracy /20, object
+clarity /15, character consistency /10, icon readability /10, dark-background fit /10,
+and Remotion compatibility /15. A critical semantic failure always blocks locking.
+Human approval remains required even at 80 or above.
+
+If API creation is complete but the new Style ID is not configured locally, save that
+new ID to the ignored `.env` as `RECRAFT_STYLE_ID=...` before routine future
+generation. The validation command does not update `.env`.
+
+**HUMAN APPROVAL REQUIRED.**
+
+### Automated validation result (2026-10-05)
+
+Six outputs were generated with the new private style. Editorial heuristic: **63/100
+(rejected)**. Semantic accuracy was **12/20**; critical failures: auction paddle and
+branching-choice symbol. The auction object resembles a round racket/magnifying-glass
+form; the choice icon includes leaf-like tree marks. Person, locomotive, door, and car
+were recognizable. Style lock remains false, and human approval remains pending.

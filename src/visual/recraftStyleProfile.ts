@@ -1,22 +1,20 @@
 import { z } from 'zod';
 
 export const RecraftStyleProfileSchema = z.object({
-  version: z.literal('recraft-v1'),
-  name: z.literal('Selected Editorial Scientific Style'),
+  version: z.literal('midnight-scientific-editorial-v1'),
+  name: z.literal('Midnight Scientific Editorial v1'),
   provider: z.literal('recraft'),
   visualRole: z.literal('illustration-assets'),
-  preferredUsage: z.tuple([
-    z.literal('objects'), z.literal('icons'), z.literal('characters'), z.literal('scene-plates'),
-  ]),
+  preferredUsage: z.tuple([z.literal('objects'), z.literal('icons'), z.literal('characters')]),
   compositingBackground: z.literal('dark-editorial'),
 }).strict();
 
 export const RECRAFT_STYLE_PROFILE = RecraftStyleProfileSchema.parse({
-  version: 'recraft-v1',
-  name: 'Selected Editorial Scientific Style',
+  version: 'midnight-scientific-editorial-v1',
+  name: 'Midnight Scientific Editorial v1',
   provider: 'recraft',
   visualRole: 'illustration-assets',
-  preferredUsage: ['objects', 'icons', 'characters', 'scene-plates'],
+  preferredUsage: ['objects', 'icons', 'characters'],
   compositingBackground: 'dark-editorial',
 });
 

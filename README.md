@@ -99,3 +99,10 @@ run `npm run recraft:style-status` to check the profile and lock state. Run
 generated assets stay local and ignored by Git. An API response does not by itself
 approve the style. See [Phase 2](docs/PHASE2.md), [API notes](docs/RECRAFT_API_NOTES.md),
 and [the human review sheet](docs/RECRAFT_STYLE_REVIEW.md).
+
+The active Task001 follow-up uses the original **Midnight Scientific Editorial v1**
+profile. Run `npm run recraft:validate-midnight-style` to create the six-reference
+custom style and generate six atomic validation images; use
+`npm run recraft:score-midnight-style` after recording an assessment. The command
+keeps a newly returned style identifier in memory only. Set the new ID locally in
+`.env` for later reuse; the task never writes it to `.env` or Git.

@@ -21,6 +21,8 @@
     "recraft:style-status": "tsx scripts/recraft-style-status.ts",
     "recraft:validate-style": "tsx scripts/validate-recraft-style.ts",
     "recraft:score-style": "tsx scripts/score-recraft-style.ts",
+    "recraft:validate-midnight-style": "tsx scripts/validate-midnight-recraft-style.ts",
+    "recraft:score-midnight-style": "tsx scripts/score-midnight-recraft-style.ts",
     "validate:episode": "tsx scripts/validate-episode.ts",
     "validate:episodes": "tsx scripts/validate-episodes.ts",
     "test:episodes": "tsx --test src/episode/episode.test.ts",

@@ -5,7 +5,7 @@ import {
   RecraftStyleAssessmentSchema,
   RecraftStyleValidationReportSchema,
 } from '../src/recraft/schemas';
-import { calculateStyleScore, styleLockEligible } from '../src/recraft/styleValidation';
+import { calculateLegacyStyleScore, styleLockEligible } from '../src/recraft/styleValidation';
 
 const root = process.cwd();
 const manifestPath = path.join(root, 'assets/style-validation/recraft-v1/validation-manifest.json');
@@ -30,7 +30,7 @@ async function main() {
     await access(path.join(root, entry.filePath));
   }));
 
-  const score = calculateStyleScore(assessment.scoreBreakdown);
+  const score = calculateLegacyStyleScore(assessment.scoreBreakdown);
   const approved = assessment.humanApprovalStatus === 'approved';
   const styleLocked = styleLockEligible(score, true, 6, approved);
   const status = assessment.humanApprovalStatus === 'rejected' || score < 65
