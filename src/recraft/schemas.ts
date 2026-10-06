@@ -11,6 +11,7 @@ export const RecraftImageRequestSchema = z.object({
   assetType: z.enum(RECRAFT_ASSET_TYPES),
   aspectRatio: z.string().regex(/^\d{1,2}:\d{1,2}$/).optional(),
   transparentBackground: z.boolean().optional(),
+  preparedPrompt: z.string().trim().min(1).max(8000).optional(),
 }).strict();
 
 export const RecraftApiResponseSchema = z.object({

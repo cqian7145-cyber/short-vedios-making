@@ -26,9 +26,15 @@ generated/
 /assets/style-validation/midnight-scientific-editorial-v2/references/*.png
 /assets/style-validation/midnight-scientific-editorial-v2/*.png
 /assets/style-validation/midnight-scientific-editorial-v2/validation-manifest.json
+/assets/cache/
+/assets/generated/
+/generated/*/asset-generation-state.json
+/generated/*/asset-generation-report.json
 !generated/
 generated/*
 !generated/style-validation/
 generated/style-validation/*
 !generated/style-validation/recraft-v1-report.json
 !generated/style-validation/recraft-v1-assessment.json
+/assets/generated/
+/assets/generated/**

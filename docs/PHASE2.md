@@ -75,6 +75,11 @@ under `generated/<episode-id>/`; it never calls Recraft. Optional `--model` enab
 bounded DeepSeek proposal, followed by deterministic local policy enforcement. See
 [Asset Strategy](ASSET_STRATEGY.md) and [Task V2-02](tasks/PHASE2_TASK_002.md).
 
+Task V2-03 executes only planned unique Recraft assets. It adds offline dry-run,
+content-addressed cache, bounded retries, semantic-risk gating, PNG validation, and
+human-review manifests. See [asset generation](RECRAFT_ASSET_GENERATION.md) and
+[Task V2-03](tasks/PHASE2_TASK_003.md).
+
 ## Official API references
 
 - [Recraft generation endpoints](https://www.recraft.ai/docs/api-reference/endpoints)

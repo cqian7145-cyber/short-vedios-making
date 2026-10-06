@@ -42,8 +42,12 @@ export function mapSemanticRequestToProviderRequest(
     );
   }
 
+  const prompt = parsed.data.preparedPrompt
+    ? `${parsed.data.preparedPrompt} NO EMBEDDED TEXT, numbers, or logos.`
+    : `${STYLE_PROMPT_PREFIX} ${buildSemanticPrompt(parsed.data)} NO EMBEDDED TEXT, numbers, or logos.`;
+  if (prompt.length > 1000) throw new RecraftProviderError('Prompt exceeds the Recraft API limit of 1000 characters.', {code:'INVALID_REQUEST'});
   return {
-    prompt: `${STYLE_PROMPT_PREFIX} ${buildSemanticPrompt(parsed.data)} NO EMBEDDED TEXT, numbers, or logos.`,
+    prompt,
     model: RECRAFT_MODEL,
     style_id: styleId,
     size: parsed.data.aspectRatio ?? '1:1',

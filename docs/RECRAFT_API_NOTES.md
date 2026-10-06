@@ -14,6 +14,7 @@ Verified against Recraft's official API documentation on 2026-10-05.
 - **Dimensions:** semantic aspect ratios map to the documented `size` ratio form; default
   is `1:1`, scene validation requests use `16:9`.
 - **Response:** first `data` image's `b64_json` is schema-validated and decoded locally.
+- **Prompt limit:** a live Task V2-03 request confirmed the generation endpoint rejects prompts longer than 1000 characters. Asset prompt construction and final provider mapping enforce this limit before sending.
 - **Transparency:** current generation endpoint reference documents no transparency
   parameter. `transparentBackground: true` is rejected explicitly; the provider does not
   guess an undocumented field. The style-validation prompts request quiet composition,

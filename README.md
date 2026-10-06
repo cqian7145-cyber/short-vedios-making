@@ -121,3 +121,17 @@ npm run plan:assets -- --episode episodes/generated/paradox-of-choice.json --vis
 
 See [Asset Strategy](docs/ASSET_STRATEGY.md) for routing rules, budgets, and registry
 reuse.
+
+### Phase 2 Task V2-03 — Recraft Asset Generation
+
+Task003 executes only the new assets selected by Task002. A dry run is offline; normal
+execution validates the budget, checks local cache, and calls the existing Recraft
+provider only for cache misses:
+
+```powershell
+npm run generate:assets -- --plan generated/paradox-of-choice/asset-plan.json --dry-run
+npm run generate:assets -- --plan generated/paradox-of-choice/asset-plan.json
+```
+
+See [Recraft Asset Generation](docs/RECRAFT_ASSET_GENERATION.md) for retry, reuse,
+high-risk, report, and human-review behavior.

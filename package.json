@@ -16,6 +16,7 @@
     "research:episode": "tsx scripts/research-episode.ts",
     "plan:visuals": "tsx scripts/plan-visuals.ts",
     "plan:assets": "tsx scripts/plan-assets.ts",
+    "generate:assets": "tsx scripts/generate-assets.ts",
     "factory": "tsx scripts/factory.ts",
     "generate:verified": "tsx scripts/generate-verified.ts",
     "phase2:preflight": "tsx scripts/phase2-preflight.ts",
@@ -28,7 +29,7 @@
     "validate:episodes": "tsx scripts/validate-episodes.ts",
     "test:episodes": "tsx --test src/episode/episode.test.ts",
     "test:ai": "tsx --test tests/generation.test.ts",
-    "test": "tsx --test src/episode/episode.test.ts tests/generation.test.ts tests/task007.test.ts tests/task008.test.ts tests/phase2.test.ts tests/assetStrategy.test.ts",
+    "test": "tsx --test src/episode/episode.test.ts tests/generation.test.ts tests/task007.test.ts tests/task008.test.ts tests/phase2.test.ts tests/assetStrategy.test.ts tests/assetGeneration.test.ts",
     "schema:episode": "tsx scripts/generate-episode-schema.ts"
   },
   "dependencies": {

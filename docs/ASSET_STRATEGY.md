@@ -79,3 +79,9 @@ The command writes `generated/<episode-id>/asset-plan.json` and
 `generated/<episode-id>/asset-strategy-report.json`. Add `--force` to replace these
 outputs. Add `--model deepseek-flash` to request a model proposal; this uses DeepSeek
 but still does not call Recraft. Neither output contains API keys or Style IDs.
+
+## Task003 execution
+
+Task002 decides which assets are new, reused, or procedural. Task003 generates only
+the unique `source: new` assets and resolves registry/cache reuse without silently
+creating replacements. See [Recraft Asset Generation](RECRAFT_ASSET_GENERATION.md).

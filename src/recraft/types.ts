@@ -11,6 +11,7 @@ export type RecraftImageRequest = {
   assetType: RecraftAssetType;
   aspectRatio?: string;
   transparentBackground?: boolean;
+  preparedPrompt?: string;
 };
 
 export type RecraftProviderRequest = {
