@@ -107,3 +107,17 @@ generate the validation set; use `npm run recraft:score-midnight-style` after re
 an assessment. A newly created style identifier is immediately saved in the ignored
 `.recraft-style.local.json`; `RECRAFT_STYLE_ID` in the environment takes priority. The
 identifier is never printed or committed. This refinement does not start Task002.
+
+### Phase 2 Task V2-02 — Asset Strategy
+
+The independent AssetPlan routes each scene to procedural, Recraft, hybrid, or reuse.
+Recraft provides illustrated atomic assets; Remotion draws exact information graphics.
+Hybrid is preferred when a physical subject and precise knowledge visualization appear
+together. Planning is offline by default and never calls Recraft:
+
+```powershell
+npm run plan:assets -- --episode episodes/generated/paradox-of-choice.json --visual-plan generated/paradox-of-choice/visual-plan.json --facts research/paradox-of-choice/fact-pack.json --dry-run
+```
+
+See [Asset Strategy](docs/ASSET_STRATEGY.md) for routing rules, budgets, and registry
+reuse.

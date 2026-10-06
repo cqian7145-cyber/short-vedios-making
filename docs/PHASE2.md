@@ -58,6 +58,23 @@ the value into `.env` themselves. The value is omitted from reports and console 
 - V2-06 — cross-episode asset reuse.
 - V2-07 — Factory v2.
 
+## Task V2-02 — Asset Strategy Director
+
+The AssetPlan is separate from Task007's VisualPlan. VisualPlan states a scene's visual
+concept; AssetPlan routes production between Recraft atomic subjects and procedural
+Remotion graphics. Hybrid is preferred when illustrated subjects accompany precise
+information graphics. Auction paddles are high risk, precise branching diagrams are
+procedural-only, and duplicate motifs use `reuseKey` to avoid repeat generations.
+
+```powershell
+npm run plan:assets -- --episode episodes/generated/paradox-of-choice.json --visual-plan generated/paradox-of-choice/visual-plan.json --facts research/paradox-of-choice/fact-pack.json --dry-run
+```
+
+This offline planning command writes `asset-plan.json` and `asset-strategy-report.json`
+under `generated/<episode-id>/`; it never calls Recraft. Optional `--model` enables a
+bounded DeepSeek proposal, followed by deterministic local policy enforcement. See
+[Asset Strategy](ASSET_STRATEGY.md) and [Task V2-02](tasks/PHASE2_TASK_002.md).
+
 ## Official API references
 
 - [Recraft generation endpoints](https://www.recraft.ai/docs/api-reference/endpoints)
