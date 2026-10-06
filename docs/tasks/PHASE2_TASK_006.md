@@ -46,4 +46,5 @@ Commands and results:
 - Cross-Episode fixtures cover hook/ending repetition, history limit, metadata-only entries, and stale input fingerprints. No prior distinct QA report existed for the CLI smoke, so the current Paradox history comparison contained 0 previous episodes.
 - Main code: `src/visual-qa/`, `scripts/visual-qa.ts`, and `tests/visualQa.test.ts`.
 - Local-only artifacts: `generated/paradox-of-choice/visual-qa-report.json`, `qa/paradox-of-choice/visual-qa.html`, `qa/paradox-of-choice/VISUAL_REVIEW.md`, and `qa/history/index.json`.
-- Commit and push evidence is recorded after final diff review.
+- Feature commit: `26dc8fec52e7d9385bd4e9f06e6575cc06c9bec5` (`feat: add visual consistency and similarity QA`).
+- `git push origin main` — PASS; `d253146..26dc8fe main -> main`.
