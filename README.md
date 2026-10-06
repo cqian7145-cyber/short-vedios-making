@@ -150,3 +150,7 @@ It does not rerun research or image generation. See
 ### Phase 2 Task V2-05 — Asset Library + Smart Reuse
 
 Task005 accumulates approved Recraft assets and human-curated original/licensed assets. Task002 checks it before requesting a new visual asset; Task003 resolves approved matches locally with zero Recraft calls; Task004 verifies and stages the approved binary. The index and generated files stay local by default. Commands include `npm run library:search`, `library:list`, `library:promote`, `library:add-curated`, `library:disable`, and `library:doctor`. See [Asset Library](docs/ASSET_LIBRARY.md) and [Task V2-05](docs/tasks/PHASE2_TASK_005.md).
+
+### Phase 2 Task V2-06 — Visual Consistency + Similarity QA
+
+Task005 accumulates approved reusable assets; Task006 inspects local Episode and hybrid-render artifacts; Task007 will automate the release pipeline. Run `npm run qa:visual -- --episode <episode.json> --visual-plan <visual-plan.json> --asset-plan <asset-plan.json> --hybrid-report <hybrid-render-report.json> --stills <qa-stills-dir> --phase1-stills <phase1-stills-dir> --compare-history`. The tool uses deterministic metadata rules, local PNG dHash and palette features, and a bounded QA history. It does not call providers, create images, rerender videos, or make aesthetic claims. Reports, local HTML, review sheets, and QA history are ignored by Git. See [Visual QA](docs/VISUAL_QA.md) and [Task V2-06](docs/tasks/PHASE2_TASK_006.md).

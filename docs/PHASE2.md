@@ -101,3 +101,7 @@ providers. Phase 1 rendering and Factory v1 remain independent of Recraft. See
 ## Task V2-05: Asset Library and smart reuse
 
 The local Asset Library is the first lookup before new generation. Only explicitly approved Recraft assets and original/user-owned/licensed curated assets enter it. Search, promotion, validation, and reuse are offline; generated binaries and the local index stay ignored by Git. Task002 writes safe library references into AssetPlan; Task003 resolves those references with zero Recraft calls; Task004 rechecks approval, file validity, enabled state, and content hash before staging. Disable preserves history and files. See [Asset Library](ASSET_LIBRARY.md) and [Task V2-05](tasks/PHASE2_TASK_005.md).
+
+## Task V2-06: Visual Consistency + Similarity QA
+
+Task005 accumulates reusable approved assets; Task006 inspects Episode-level visual consistency; Task007 will automate the later release pipeline. The `qa:visual` CLI compares saved Episode, VisualPlan, AssetPlan, hybrid render evidence, local PNG stills, and at most the latest 20 QA-history entries. It uses local deterministic layout/archetype/structure checks, PNG dHash and palette summaries, and explicit editorial heuristics. It makes zero provider calls and does not generate images, mutate inputs, alter MP4s, or approve assets. Its local report, dashboard, review checklist, and history stay ignored by Git. See [Visual QA](VISUAL_QA.md) and [Task V2-06](tasks/PHASE2_TASK_006.md).

@@ -42,3 +42,5 @@ Snapshots and reports contain local review decisions, semantic scene intent, sta
 The existing `EpisodeVideo` composition and `npm run render:episode` remain backward compatible. V2-04 is optional to the Phase 1 factory and does not require Recraft credentials.
 
 An AssetPlan may reference an approved Task V2-05 library asset. Task003 resolves it into the episode manifest without generation. Task004 treats explicit library provenance as approved, then independently validates the local PNG and SHA-256 before staging. Episode-generated assets continue to require their own local review decision.
+
+Task V2-06 inspects this saved render evidence without calling providers or rerendering. Run `npm run qa:visual -- --episode <episode.json> --visual-plan <visual-plan.json> --asset-plan <asset-plan.json> --hybrid-report generated/<id>/hybrid-render-report.json --stills qa/<id>/hybrid --compare-history`. The sibling `hybrid-render-input.json` supplies exact resolved per-scene layout, production strategy, and signature markers. A draft stays a draft in human review; QA never changes its MP4 or asset decisions. Details: [Visual QA](VISUAL_QA.md).
