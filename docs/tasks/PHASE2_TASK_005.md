@@ -36,4 +36,6 @@ All required Task V2-05 behavior is implemented and has offline coverage. Curren
 - Fixture smoke: approved PNG promotion, same-byte dedupe into one library binary with two source references, deterministic reuse, Task003 `recraftCallCount=0`, Task004 staging, and disabled-asset exclusion all passed.
 - `npm run library:doctor` — PASS; live library currently contains 0 generated and 0 curated assets. Fixture assets were created only in temporary test directories.
 - Provider call test and Task008 factory regression passed within the offline automated suite. No paid API was used.
-- `git diff --cached --check` — PASS; staged-file security scan found no API key value or selected Style UUID. `.env`, local Style state, user Episode files, and planning files were not staged.\n- Commit `4c7bd4c` (`feat: add reusable visual asset library`) — created on `main`.\n- `git push origin main` — PASS; `main` advanced from `3426bd3` to `4c7bd4c`.\n- `stash@{0}` remains present and untouched.
+- `git diff --cached --check` — PASS; staged-file security scan found no API key value or selected Style UUID. `.env`, local Style state, user Episode files, and planning files were not staged.
+- Commit `4c7bd4c` (`feat: add reusable visual asset library`) — created on `main`.
+- git push origin main` — PASS; `main` advanced from `3426bd3` to `4c7bd4c`.\n- `stash@{0}` remains present and untouched.
