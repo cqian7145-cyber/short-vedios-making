@@ -96,4 +96,4 @@ pending; pending assets fall back by default; rejected assets are never composit
 An explicit `--allow-pending-assets` render is marked `DRAFT — UNREVIEWED ASSETS`.
 Rendering reuses saved Task007/Task V2 artifacts and does not repeat research or call
 providers. Phase 1 rendering and Factory v1 remain independent of Recraft. See
-[composer notes](RECRAFT_HYBRID_COMPOSER.md) and [Task V2-04](tasks/PHASE2_TASK_004.md).
+[composer notes](HYBRID_COMPOSER.md) and [Task V2-04](tasks/PHASE2_TASK_004.md).

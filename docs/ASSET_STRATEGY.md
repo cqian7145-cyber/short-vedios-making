@@ -85,3 +85,8 @@ but still does not call Recraft. Neither output contains API keys or Style IDs.
 Task002 decides which assets are new, reused, or procedural. Task003 generates only
 the unique `source: new` assets and resolves registry/cache reuse without silently
 creating replacements. See [Recraft Asset Generation](RECRAFT_ASSET_GENERATION.md).
+
+Task004 then consumes the saved Episode, VisualPlan, AssetPlan, generated manifest,
+and local human-review state to compose approved illustrations with Remotion. In
+short: Task002 decides, Task003 generates/caches, and Task004 composes/renders. See
+[Hybrid Composer](HYBRID_COMPOSER.md).

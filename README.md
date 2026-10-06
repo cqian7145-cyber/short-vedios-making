@@ -145,4 +145,4 @@ creates a visibly marked draft and never bypasses rejection. Start with
 `npm run review:asset -- --episode <id> --asset <id> --approve|--reject|--pending`, then
 run `npm run render:hybrid -- --episode <path> --visual-plan <path> --asset-plan <path> --manifest <path>`.
 It does not rerun research or image generation. See
-[Hybrid Scene Composer](docs/RECRAFT_HYBRID_COMPOSER.md).
+[Hybrid Scene Composer](docs/HYBRID_COMPOSER.md).

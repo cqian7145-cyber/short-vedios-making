@@ -1,6 +1,6 @@
 # Recraft Asset Generation Engine
 
-Task002 decides where illustrated assets belong. Task003 executes only the new Recraft assets explicitly listed in `uniqueRecraftAssets`; it does not call DeepSeek or Tavily, regenerate upstream plans, or render an episode. Task004 will compose the resulting image assets with Remotion's precise diagrams and motion.
+Task002 decides where illustrated assets belong. Task003 executes only the new Recraft assets explicitly listed in `uniqueRecraftAssets` and maintains the local image cache; it does not call DeepSeek or Tavily, regenerate upstream plans, or render an episode. Task004 consumes those saved assets and local human-review decisions, then composes the illustrated subjects with Remotion's precise diagrams, typography, and motion. See [Hybrid Remotion Scene Composer](HYBRID_COMPOSER.md).
 
 ```powershell
 npm run generate:assets -- --plan generated/paradox-of-choice/asset-plan.json --dry-run
