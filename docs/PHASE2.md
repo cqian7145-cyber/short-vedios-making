@@ -56,7 +56,7 @@ the value into `.env` themselves. The value is omitted from reports and console 
 - V2-04 — Remotion hybrid scenes.
 - V2-05 — cross-Episode local Asset Library and safe reuse (this task).
 - V2-06 — visual quality and similarity checks.
-- V2-07 — Factory v2.
+- V2-07 — Hybrid Factory V2 PASS (offline and bounded live draft smoke, fixture release, full regressions; live episode remains at its required human-review gate).
 
 ## Task V2-02 — Asset Strategy Director
 
@@ -104,4 +104,13 @@ The local Asset Library is the first lookup before new generation. Only explicit
 
 ## Task V2-06: Visual Consistency + Similarity QA
 
-Task005 accumulates reusable approved assets; Task006 inspects Episode-level visual consistency; Task007 will automate the later release pipeline. The `qa:visual` CLI compares saved Episode, VisualPlan, AssetPlan, hybrid render evidence, local PNG stills, and at most the latest 20 QA-history entries. It uses local deterministic layout/archetype/structure checks, PNG dHash and palette summaries, and explicit editorial heuristics. It makes zero provider calls and does not generate images, mutate inputs, alter MP4s, or approve assets. Its local report, dashboard, review checklist, and history stay ignored by Git. See [Visual QA](VISUAL_QA.md) and [Task V2-06](tasks/PHASE2_TASK_006.md).
+Task005 accumulates reusable approved assets; Task006 inspects Episode-level visual consistency; Task007 orchestrates the release pipeline. The `qa:visual` CLI compares saved Episode, VisualPlan, AssetPlan, hybrid render evidence, local PNG stills, and at most the latest 20 QA-history entries. It uses local deterministic layout/archetype/structure checks, PNG dHash and palette summaries, and explicit editorial heuristics. It makes zero provider calls and does not generate images, mutate inputs, alter MP4s, or approve assets. Its local report, dashboard, review checklist, and history stay ignored by Git. See [Visual QA](VISUAL_QA.md) and [Task V2-06](tasks/PHASE2_TASK_006.md).
+
+
+## V2-07 — Hybrid Factory V2
+
+
+`npm run factory:v2` orchestrates Phase 1 and Phase 2 checkpoints, draft rendering, Visual QA, human review, and safe release packaging. Offline Paradox and bounded live smoke both paused at human review as designed. A separate approval fixture completed safe release render, fresh QA, and delivery. All requested regressions passed. See [Hybrid Factory V2](HYBRID_FACTORY_V2.md) and [Task V2-07](tasks/PHASE2_TASK_007.md).
+
+
+**Phase 2 status: V2-01 through V2-07 PASS.** The live Jevons smoke is a draft, not a release candidate: its Fact Pack is not publication-ready and it remains at human review as designed.

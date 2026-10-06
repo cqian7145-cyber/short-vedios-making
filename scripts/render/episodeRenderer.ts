@@ -8,7 +8,7 @@ import type {HybridSceneAsset} from '../../src/assets/hybridComposer';
 import type {ResolvedHybridAsset} from '../../src/composition/assetResolver';
 import type {HybridSceneFallback,HybridLayout} from '../../src/composition/hybridTypes';
 
-export type HybridRenderProps={resolvedHybridAssets?:Record<string,readonly ResolvedHybridAsset[]>;hybridFallbacks?:Record<string,readonly HybridSceneFallback[]>;hybridLayouts?:Record<string,HybridLayout>;signatureSceneIds?:readonly string[]};
+export type HybridRenderProps={resolvedHybridAssets?:Record<string,readonly ResolvedHybridAsset[]>;hybridFallbacks?:Record<string,readonly HybridSceneFallback[]>;hybridLayouts?:Record<string,HybridLayout>;signatureSceneIds?:readonly string[];draftLabel?:string};
 export type RenderEpisodeOptions = {outputLocation?: string; visualStrategies?: Record<string, ResolvedVisualStrategy>; hybridSceneAssets?: Record<string, readonly HybridSceneAsset[]>; onProgress?: (progress: number) => void; quiet?: boolean}&HybridRenderProps;
 
 export async function renderEpisode(file: string, options: RenderEpisodeOptions = {}): Promise<string> {

@@ -30,3 +30,5 @@ Procedural Remotion assets remain the home for precise diagrams, formulas, netwo
 `library:doctor` checks the local index and every referenced binary for schema/ID problems, missing files, hash or dimension mismatch, unsupported formats, and disabled counts. Automated tests use temporary fixture files and mock no external provider because none is called. The local Task004 pending door remains pending until a human review explicitly approves it.
 
 Task V2-06 reads AssetPlan placements and saved QA history to report repetition frequency. Reuse is not automatically bad: an intentional persistent motif can be exempted when its declared motif matches the asset. The QA pass never edits library usage, promotes assets, or changes approval state. See [Visual QA](VISUAL_QA.md).
+
+Factory V2 resolves approved library references before Task003 cache misses and Recraft generation. It does not automatically promote newly approved episode assets.

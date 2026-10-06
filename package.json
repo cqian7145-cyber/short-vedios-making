@@ -28,6 +28,8 @@
     "library:doctor": "tsx scripts/library-doctor.ts",
     "qa:visual": "tsx scripts/visual-qa.ts",
     "factory": "tsx scripts/factory.ts",
+    "factory:v2": "tsx scripts/factory-v2.ts",
+    "factory:v2:review": "tsx scripts/factory-v2-review.ts",
     "generate:verified": "tsx scripts/generate-verified.ts",
     "phase2:preflight": "tsx scripts/phase2-preflight.ts",
     "recraft:style-status": "tsx scripts/recraft-style-status.ts",
@@ -39,7 +41,7 @@
     "validate:episodes": "tsx scripts/validate-episodes.ts",
     "test:episodes": "tsx --test src/episode/episode.test.ts",
     "test:ai": "tsx --test tests/generation.test.ts",
-    "test": "tsx --test src/episode/episode.test.ts tests/generation.test.ts tests/task007.test.ts tests/task008.test.ts tests/phase2.test.ts tests/assetStrategy.test.ts tests/assetGeneration.test.ts tests/hybridComposer.test.ts tests/assetLibrary.test.ts tests/visualQa.test.ts",
+    "test": "tsx --test src/episode/episode.test.ts tests/generation.test.ts tests/task007.test.ts tests/task008.test.ts tests/phase2.test.ts tests/assetStrategy.test.ts tests/assetGeneration.test.ts tests/hybridComposer.test.ts tests/assetLibrary.test.ts tests/visualQa.test.ts tests/factoryV2.test.ts",
     "schema:episode": "tsx scripts/generate-episode-schema.ts"
   },
   "dependencies": {

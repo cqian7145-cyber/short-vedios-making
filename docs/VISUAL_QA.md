@@ -41,3 +41,5 @@ Use Task004's existing Paradox draft to exercise illustration and fallback conte
 ## Testing
 
 Automated tests use generated PNG fixtures and mock/no providers. They cover thresholds, similarity determinism, palette drift, history limits, stale fingerprints, immutable input objects, preserved MP4s, and recommendations. Offline QA smoke for the existing Paradox inputs is recorded in `docs/tasks/PHASE2_TASK_006.md`.
+
+Task V2-07 invokes this report after both draft and safe release renders. Release renders get a fresh QA report; a draft report is never reused as release approval.

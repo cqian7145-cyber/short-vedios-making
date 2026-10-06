@@ -153,4 +153,16 @@ Task005 accumulates approved Recraft assets and human-curated original/licensed 
 
 ### Phase 2 Task V2-06 — Visual Consistency + Similarity QA
 
-Task005 accumulates approved reusable assets; Task006 inspects local Episode and hybrid-render artifacts; Task007 will automate the release pipeline. Run `npm run qa:visual -- --episode <episode.json> --visual-plan <visual-plan.json> --asset-plan <asset-plan.json> --hybrid-report <hybrid-render-report.json> --stills <qa-stills-dir> --phase1-stills <phase1-stills-dir> --compare-history`. The tool uses deterministic metadata rules, local PNG dHash and palette features, and a bounded QA history. It does not call providers, create images, rerender videos, or make aesthetic claims. Reports, local HTML, review sheets, and QA history are ignored by Git. See [Visual QA](docs/VISUAL_QA.md) and [Task V2-06](docs/tasks/PHASE2_TASK_006.md).
+Task005 accumulates approved reusable assets; Task006 inspects local Episode and hybrid-render artifacts; Task007 orchestrates the release pipeline. Run `npm run qa:visual -- --episode <episode.json> --visual-plan <visual-plan.json> --asset-plan <asset-plan.json> --hybrid-report <hybrid-render-report.json> --stills <qa-stills-dir> --phase1-stills <phase1-stills-dir> --compare-history`. The tool uses deterministic metadata rules, local PNG dHash and palette features, and a bounded QA history. It does not call providers, create images, rerender videos, or make aesthetic claims. Reports, local HTML, review sheets, and QA history are ignored by Git. See [Visual QA](docs/VISUAL_QA.md) and [Task V2-06](docs/tasks/PHASE2_TASK_006.md).
+
+### Phase 2 Task V2-07 — Hybrid Factory V2
+
+Factory V2 coordinates the Phase 1 Factory with AssetPlan, library/cache-first asset resolution, bounded Recraft generation, Hybrid Composer, Visual QA, human review, and safe delivery. Recraft creates visual assets; Remotion remains the final compositor. Draft runs pause for one human review; release requires approved assets, current QA, verified research, and explicit approval.
+
+```powershell
+npm run factory:v2 -- --topic "Why can more choice make decisions harder?" --id example-episode --duration 60 --draft
+npm run factory:v2:review -- --episode example-episode --approve --note "Reviewed draft and QA warnings."
+npm run factory:v2 -- --id example-episode --resume --release
+```
+
+The saved Paradox offline smoke passed and paused at human review. Regression, bounded live smoke, fixture release, and Git acceptance evidence are recorded in [Task V2-07](docs/tasks/PHASE2_TASK_007.md). Details: [Hybrid Factory V2](docs/HYBRID_FACTORY_V2.md).
