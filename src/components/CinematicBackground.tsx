@@ -5,10 +5,18 @@ import {AtmosphericParticles} from './backgrounds/AtmosphericParticles';
 import {DarkGradient} from './backgrounds/DarkGradient';
 import {SubtleTexture} from './backgrounds/SubtleTexture';
 
+export function backgroundOpacityFrames(durationFrames: number): [number, number, number, number] {
+  const endFrame = Math.max(3, Math.floor(durationFrames));
+  const riseEnd = Math.max(1, Math.min(28, Math.floor(endFrame * 0.18)));
+  const fadeStart = Math.max(riseEnd + 1, Math.floor(endFrame * 0.78));
+  const fadeEnd = Math.max(fadeStart + 1, endFrame);
+  return [0, riseEnd, fadeStart, fadeEnd];
+}
+
 export const CinematicBackground: React.FC<{archiveTexture?: boolean; durationFrames?: number}> = ({archiveTexture = false, durationFrames = 600}) => {
   const frame = useCurrentFrame();
-  const fadeStart = Math.max(28, durationFrames - 45);
-  const opacity = interpolate(frame, [0, 28, fadeStart, durationFrames], [.82, 1, .62, .05], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  // Keep frame ranges strictly increasing even for short Episode smoke renders.
+  const opacity = interpolate(frame, backgroundOpacityFrames(durationFrames), [.82, 1, .62, .05], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return <AbsoluteFill style={{backgroundColor: vibeTheme.colors.background.primary, overflow: 'hidden'}}>
     <DarkGradient opacity={opacity} />
     <AbsoluteFill style={{opacity: opacity * 0.92, zIndex: vibeTheme.zIndex.atmosphere}}><AtmosphericParticles /></AbsoluteFill>

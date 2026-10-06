@@ -20,7 +20,7 @@ const safeSegment = (value: string) => {
 async function exists(file: string): Promise<boolean> { try { await access(file); return true; } catch { return false; } }
 async function isReadablePng(file: string): Promise<boolean> { try { inspectPng(await readFile(file)); return true; } catch { return false; } }
 async function atomicJson(file: string, value: unknown) { await mkdir(path.dirname(file),{recursive:true}); const temp = `${file}.tmp`; await writeFile(temp,`${JSON.stringify(value,null,2)}\n`,'utf8'); await rename(temp,file); }
-async function writeRegistry(file: string, assets: GeneratedAsset[]) { await atomicJson(file,AssetRegistrySchema.parse({schemaVersion:'asset-registry-v1',assets:assets.map((asset)=>({id:asset.id,reuseKey:asset.reuseKey,assetKind:asset.assetKind,subject:asset.subject,profileVersion:asset.profileVersion,provider:'recraft',path:asset.filePath,createdAt:asset.createdAt,episodeIds:[asset.episodeId]}))})); }
+async function writeRegistry(file: string, assets: GeneratedAsset[]) { await atomicJson(file,AssetRegistrySchema.parse({schemaVersion:'asset-registry-v1',assets:assets.map((asset)=>({id:asset.id,reuseKey:asset.reuseKey,assetKind:asset.assetKind,subject:asset.subject,profileVersion:asset.profileVersion,provider:asset.provider,path:asset.filePath,createdAt:asset.createdAt,episodeIds:[asset.episodeId]}))})); }
 function scenesByReuseKey(plan: AssetPlan) { const result = new Map<string,string[]>(); for (const scene of plan.scenePlans) for (const asset of scene.recraftAssets) { const ids = result.get(asset.reuseKey) ?? []; if (!ids.includes(scene.sceneId)) ids.push(scene.sceneId); result.set(asset.reuseKey,ids); } return result; }
 function uniquePlanAssets(plan: AssetPlan): RecraftAssetBrief[] { return plan.uniqueRecraftAssets.filter((asset) => asset.source === 'new'); }
 function assertPlanSafety(plan: AssetPlan) {
@@ -100,8 +100,8 @@ export async function generateAssets(planInput: unknown, options: AssetGenerator
       nextAssets.set(asset.reuseKey,record); cacheHits++; warnings.push(`${asset.assetId}: semantic correctness and embedded-text risk require human review.`); results.push({assetId:asset.assetId,reuseKey:asset.reuseKey,status:'cache-hit',filePath:relOut,cacheKey}); statuses.set(asset.assetId,{assetId:asset.assetId,cacheKey,status:'ready'}); continue;
       }
     }
-    if (!options.force && (asset.source==='registry' || asset.source==='episode')) {
-      const reused = await findReusableAsset(root,asset.reuseKey);
+    if (!options.force && (asset.source==='registry' || asset.source==='episode' || asset.source==='library')) {
+      const reused = await findReusableAsset(root,asset.reuseKey,plan.episodeId,asset.libraryAssetId);
       if (!reused) { failures++; const message = `Reuse requested but asset not found: ${asset.reuseKey}.`; warnings.push(message); results.push({assetId:asset.assetId,reuseKey:asset.reuseKey,status:'failed',cacheKey,error:message}); statuses.set(asset.assetId,{assetId:asset.assetId,cacheKey,status:'failed',error:message}); continue; }
       nextAssets.set(asset.reuseKey,reused); reuseHits++; results.push({assetId:asset.assetId,reuseKey:asset.reuseKey,status:'reused',filePath:reused.filePath,cacheKey:reused.cacheKey}); statuses.set(asset.assetId,{assetId:asset.assetId,cacheKey:reused.cacheKey,status:'ready'}); continue;
     }
@@ -126,10 +126,10 @@ export async function generateAssets(planInput: unknown, options: AssetGenerator
   }
   // Resolve explicitly planned registry reuse targets, without generating replacements.
   const registryKeys = new Map<string,RecraftAssetBrief>();
-  for (const scene of plan.scenePlans) for (const item of scene.recraftAssets) if (item.source==='registry') registryKeys.set(item.reuseKey,item);
+  for (const scene of plan.scenePlans) for (const item of scene.recraftAssets) if (item.source==='registry'||item.source==='library') registryKeys.set(item.reuseKey,item);
   for (const [reuseKey,asset] of registryKeys) {
     if ([...nextAssets.values()].some((entry)=>entry.reuseKey===reuseKey)) continue;
-    const reused=await findReusableAsset(root,reuseKey);
+    const reused=await findReusableAsset(root,reuseKey,plan.episodeId,asset.libraryAssetId);
     if (!reused) { failures++; const message=`Reuse requested but asset not found: ${reuseKey}.`; warnings.push(message); results.push({assetId:asset.assetId,reuseKey,status:'failed',cacheKey:'0'.repeat(64),error:message}); }
     else { nextAssets.set(reuseKey,reused); reuseHits++; results.push({assetId:asset.assetId,reuseKey,status:'reused',filePath:reused.filePath,cacheKey:reused.cacheKey}); }
   }

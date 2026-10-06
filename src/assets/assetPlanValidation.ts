@@ -83,7 +83,7 @@ export function validateAssetPlan(input: unknown, episode: Episode, policyMetric
   const uniqueRecraftAssetCount = expectedNewKeys.size;
   const highRiskAssetCount = policyMetrics?.highRiskAssetCount ?? 0;
   const policyOverrideCount = policyMetrics?.policyOverrideCount ?? plan.scenePlans.filter((scene) => scene.overrideReason).length;
-  const reuseCount = plan.scenePlans.reduce((count, scene) => count + scene.recraftAssets.filter((asset) => asset.source === 'episode' || asset.source === 'registry').length, 0);
+  const reuseCount = plan.scenePlans.reduce((count, scene) => count + scene.recraftAssets.filter((asset) => asset.source === 'episode' || asset.source === 'registry' || asset.source === 'library').length, 0);
   const proceduralOnlyElements = [...new Set(policyMetrics?.proceduralOnlyElements ?? plan.scenePlans.flatMap((scene) => scene.proceduralElements.filter(isProceduralOnlyConcept)))];
 
   if (highRiskAssetCount > 0) warnings.push('High semantic ambiguity; procedural fallback preferred.');

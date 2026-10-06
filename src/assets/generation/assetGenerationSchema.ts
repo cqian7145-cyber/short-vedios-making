@@ -4,11 +4,12 @@ import {RecraftAssetKindSchema, SemanticRiskSchema} from '../assetStrategySchema
 export const GeneratedAssetSchema = z.strictObject({
   id: z.string().min(1), reuseKey: z.string().min(1), assetKind: RecraftAssetKindSchema,
   subject: z.string().min(1), episodeId: z.string().min(1), sceneIds: z.array(z.string()),
-  provider: z.literal('recraft'), profileVersion: z.literal('recraft-v1'), promptVersion: z.literal('recraft-style-v1'),
+  provider: z.enum(['recraft','curated']), profileVersion: z.literal('recraft-v1'), promptVersion: z.enum(['recraft-style-v1','curated-intake-v1']),
   prompt: z.string().min(1), cacheKey: z.string().regex(/^[a-f0-9]{64}$/), filePath: z.string().min(1),
-  width: z.number().int().positive(), height: z.number().int().positive(), format: z.literal('png'),
-  hasAlpha: z.boolean(), backgroundMode: z.literal('generated'), createdAt: z.string().datetime(),
-  semanticRisk: SemanticRiskSchema, status: z.enum(['needs-human-review']), warnings: z.array(z.string()),
+  width: z.number().int().positive(), height: z.number().int().positive(), format: z.enum(['png','svg']),
+  hasAlpha: z.boolean(), backgroundMode: z.enum(['generated','transparent','solid','unknown']), createdAt: z.string().datetime(),
+  semanticRisk: SemanticRiskSchema, status: z.enum(['needs-human-review','library-approved']), warnings: z.array(z.string()),
+  libraryAssetId: z.string().min(1).optional(),
 });
 
 export const AssetGenerationManifestSchema = z.strictObject({schemaVersion: z.literal('asset-generation-manifest-v1'), episodeId: z.string().min(1), assets: z.array(GeneratedAssetSchema)});

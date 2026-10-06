@@ -54,8 +54,8 @@ the value into `.env` themselves. The value is omitted from reports and console 
 - V2-02 — episode asset strategy and controlled asset generation.
 - V2-03 — asset normalization and compositing.
 - V2-04 — Remotion hybrid scenes.
-- V2-05 — visual quality and similarity checks.
-- V2-06 — cross-episode asset reuse.
+- V2-05 — cross-Episode local Asset Library and safe reuse (this task).
+- V2-06 — visual quality and similarity checks.
 - V2-07 — Factory v2.
 
 ## Task V2-02 — Asset Strategy Director
@@ -97,3 +97,7 @@ An explicit `--allow-pending-assets` render is marked `DRAFT — UNREVIEWED ASSE
 Rendering reuses saved Task007/Task V2 artifacts and does not repeat research or call
 providers. Phase 1 rendering and Factory v1 remain independent of Recraft. See
 [composer notes](HYBRID_COMPOSER.md) and [Task V2-04](tasks/PHASE2_TASK_004.md).
+
+## Task V2-05: Asset Library and smart reuse
+
+The local Asset Library is the first lookup before new generation. Only explicitly approved Recraft assets and original/user-owned/licensed curated assets enter it. Search, promotion, validation, and reuse are offline; generated binaries and the local index stay ignored by Git. Task002 writes safe library references into AssetPlan; Task003 resolves those references with zero Recraft calls; Task004 rechecks approval, file validity, enabled state, and content hash before staging. Disable preserves history and files. See [Asset Library](ASSET_LIBRARY.md) and [Task V2-05](tasks/PHASE2_TASK_005.md).

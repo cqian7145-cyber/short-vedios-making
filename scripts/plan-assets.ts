@@ -10,6 +10,8 @@ import {FactPackSchema} from '../src/research/schemas';
 import {getRecraftConfigurationState} from '../src/recraft/config';
 import {AssetStrategyReportSchema} from '../src/assets/assetStrategySchema';
 import {VisualPlanSchema} from '../src/visual/schemas';
+import {applyLibraryAssetsToPlan} from '../src/assets/library/libraryPlanIntegration';
+import {validateAssetPlan} from '../src/assets/assetPlanValidation';
 
 const usage = 'Usage: npm run plan:assets -- --episode episodes/generated/id.json --visual-plan generated/id/visual-plan.json --facts research/id/fact-pack.json [--dry-run] [--model deepseek-flash] [--force]';
 
@@ -79,14 +81,16 @@ async function run() {
     episode, visualPlan, factPack, registryAssets: registry.assets,
     styleStatus: recraftConfigState.styleConfigured ? 'locked' : 'missing', provider,
   });
+  const plan = await applyLibraryAssetsToPlan(result.plan, process.cwd());
+  const {report: libraryAwareReport} = validateAssetPlan(plan, episode);
   const report = AssetStrategyReportSchema.parse({
-    ...result.report,
-    warnings: [...new Set([...result.report.warnings, ...registry.warnings])],
-    status: result.report.status === 'pass' && registry.warnings.length ? 'warning' : result.report.status,
+    ...libraryAwareReport,
+    warnings: [...new Set([...libraryAwareReport.warnings, ...registry.warnings])],
+    status: libraryAwareReport.status === 'pass' && registry.warnings.length ? 'warning' : libraryAwareReport.status,
   });
   await mkdir(outputDir, {recursive: true});
   await Promise.all([
-    writeFile(planPath, `${JSON.stringify(result.plan, null, 2)}\n`, 'utf8'),
+    writeFile(planPath, `${JSON.stringify(plan, null, 2)}\n`, 'utf8'),
     writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8'),
   ]);
 

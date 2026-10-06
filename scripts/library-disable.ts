@@ -1,0 +1,2 @@
+import {disableLibraryAsset} from '../src/assets/library/libraryPromotion';
+const i=process.argv.indexOf('--asset');const id=i>=0?process.argv[i+1]:undefined;if(!id||process.argv.slice(i+2).some((x)=>x.startsWith('--')))throw new Error('Usage: npm run library:disable -- --asset canonical-name');disableLibraryAsset(process.cwd(),id).then(()=>console.log(`Disabled ${id}; binary and usage history retained.`)).catch((error:unknown)=>{console.error(error instanceof Error?error.message:'Library disable failed.');process.exitCode=1;});

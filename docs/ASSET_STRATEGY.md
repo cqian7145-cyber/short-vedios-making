@@ -90,3 +90,5 @@ Task004 then consumes the saved Episode, VisualPlan, AssetPlan, generated manife
 and local human-review state to compose approved illustrations with Remotion. In
 short: Task002 decides, Task003 generates/caches, and Task004 composes/renders. See
 [Hybrid Composer](HYBRID_COMPOSER.md).
+
+Task V2-05 makes the approved local Asset Library the first lookup before generation. Exact reuse keys/names/aliases may be selected automatically only when asset kind, profile, visual role, background, and verified file are compatible. Tag-only matches remain candidates. Task002 writes `source: library` and `libraryAssetId`; Task003 resolves these offline with zero Recraft calls; Task004 verifies approval and the file hash before staging. Task005 accumulates and reuses. Thus: Task002 decides, Task003 generates/caches, Task004 composes, Task005 accumulates/reuses. See [Asset Library](ASSET_LIBRARY.md).

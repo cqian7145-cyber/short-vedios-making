@@ -146,3 +146,7 @@ creates a visibly marked draft and never bypasses rejection. Start with
 run `npm run render:hybrid -- --episode <path> --visual-plan <path> --asset-plan <path> --manifest <path>`.
 It does not rerun research or image generation. See
 [Hybrid Scene Composer](docs/HYBRID_COMPOSER.md).
+
+### Phase 2 Task V2-05 — Asset Library + Smart Reuse
+
+Task005 accumulates approved Recraft assets and human-curated original/licensed assets. Task002 checks it before requesting a new visual asset; Task003 resolves approved matches locally with zero Recraft calls; Task004 verifies and stages the approved binary. The index and generated files stay local by default. Commands include `npm run library:search`, `library:list`, `library:promote`, `library:add-curated`, `library:disable`, and `library:doctor`. See [Asset Library](docs/ASSET_LIBRARY.md) and [Task V2-05](docs/tasks/PHASE2_TASK_005.md).

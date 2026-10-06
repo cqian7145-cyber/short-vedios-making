@@ -28,7 +28,8 @@ export const RecraftAssetBriefSchema = z.strictObject({
   reuseKey: z.string().regex(/^[a-z0-9][a-z0-9-]{1,79}$/),
   semanticRisk: SemanticRiskSchema,
   avoidConcepts: z.array(z.string().trim().min(1).max(100).refine((value) => !/(?:#[0-9a-f]{3,8}\b|\b\d+\s*px\b|<\/?(?:svg|div|canvas)\b)/i.test(value))).max(8),
-  source: z.enum(['new', 'registry', 'episode']).optional(),
+  source: z.enum(['new', 'registry', 'episode', 'library']).optional(),
+  libraryAssetId: z.string().min(1).optional(),
 }).strict();
 
 export const SceneAssetPlanSchema = z.strictObject({
@@ -55,7 +56,7 @@ export const ReuseGroupSchema = z.strictObject({
   reuseKey: z.string().min(1),
   assetId: z.string().min(1),
   sceneIds: z.array(z.string().min(1)).min(1),
-  source: z.enum(['new', 'registry']),
+  source: z.enum(['new', 'registry', 'library']),
 }).strict();
 
 export const AssetPlanSchema = z.strictObject({
@@ -91,7 +92,7 @@ export const AssetRegistryEntrySchema = z.strictObject({
   assetKind: RecraftAssetKindSchema,
   subject: semanticText,
   profileVersion: z.string().min(1),
-  provider: z.literal('recraft'),
+  provider: z.enum(['recraft','curated']),
   path: z.string().min(1).optional(),
   createdAt: z.string().datetime().optional(),
   episodeIds: z.array(z.string()).optional(),
@@ -106,7 +107,7 @@ export const AssetSceneProposalSchema = z.strictObject({
   sceneId: z.string().min(1).max(100),
   strategy: AssetStrategySchema,
   reason: semanticText,
-  recraftAssets: z.array(RecraftAssetBriefSchema.omit({source: true})).max(12),
+  recraftAssets: z.array(RecraftAssetBriefSchema.omit({source: true, libraryAssetId: true})).max(12),
   proceduralElements: z.array(semanticElement).max(30),
   fallback: z.enum(['procedural', 'curated-svg']),
 }).strict();

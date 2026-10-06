@@ -38,5 +38,7 @@ generated/style-validation/*
 !generated/style-validation/recraft-v1-assessment.json
 /assets/generated/
 /assets/generated/**
+/assets/library/library-index.json
+/assets/library/generated/
 /public/generated-hybrid-assets/
 /public/generated-assets/

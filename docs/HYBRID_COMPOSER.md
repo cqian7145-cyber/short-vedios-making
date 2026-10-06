@@ -40,3 +40,5 @@ The renderer validates scene IDs/order, reads the local review state, stages onl
 Snapshots and reports contain local review decisions, semantic scene intent, staged paths and hashes, counts, layouts, fallbacks, and render status. They contain no API credentials or Recraft Style ID. Reports distinguish approved/pending/rejected assets, procedural/hybrid/Recraft/reuse scene counts, fallback reasons, signature moment rendering, and the illustration-dominant scene ratio. The ratio counts a scene only when the illustration is the information carrier without planned procedural elements; hybrid overlay scenes do not inflate it.
 
 The existing `EpisodeVideo` composition and `npm run render:episode` remain backward compatible. V2-04 is optional to the Phase 1 factory and does not require Recraft credentials.
+
+An AssetPlan may reference an approved Task V2-05 library asset. Task003 resolves it into the episode manifest without generation. Task004 treats explicit library provenance as approved, then independently validates the local PNG and SHA-256 before staging. Episode-generated assets continue to require their own local review decision.
