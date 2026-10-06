@@ -9,6 +9,11 @@ import {renderRegisteredScene} from './sceneRegistry';
 import type {SceneContext} from './sceneContext';
 import type {ResolvedVisualStrategy} from '../factory/renderStrategy';
 import {VisualStrategyOverlay} from './VisualStrategyOverlay';
+import {HybridAssetLayer} from './HybridAssetLayer';
+import type {HybridSceneAsset} from '../assets/hybridComposer';
+import type {HybridSceneFallback,HybridLayout} from '../composition/hybridTypes';
+import type {ResolvedHybridAsset} from '../composition/assetResolver';
+import {HybridFallbackLayer} from './HybridFallbackLayer';
 
 const layoutTransforms = {
   'left-focus': 'translateX(-46px) scale(0.97)',
@@ -19,7 +24,7 @@ const layoutTransforms = {
   topographic: 'translateY(-14px) scale(0.98)',
 } as const;
 
-export const SceneRenderer: React.FC<{entry: SceneTimelineEntry; networks: Readonly<Record<string, NetworkDiagramSpec>>; visualStrategies?: Readonly<Record<string, ResolvedVisualStrategy>>}> = ({entry, networks, visualStrategies}) => {
+export const SceneRenderer: React.FC<{entry: SceneTimelineEntry; networks: Readonly<Record<string, NetworkDiagramSpec>>; visualStrategies?: Readonly<Record<string, ResolvedVisualStrategy>>; hybridSceneAssets?: Readonly<Record<string, readonly HybridSceneAsset[]>>;resolvedHybridAssets?:Readonly<Record<string,readonly ResolvedHybridAsset[]>>;hybridFallbacks?:Readonly<Record<string,readonly HybridSceneFallback[]>>;hybridLayout?:HybridLayout;signatureScene?:boolean}> = ({entry, networks, visualStrategies, hybridSceneAssets,resolvedHybridAssets,hybridFallbacks,hybridLayout='center-stage',signatureScene=false}) => {
   const frame = useSceneFrame(entry.spec.durationInFrames);
   const networkId = 'networkId' in entry.spec.content ? entry.spec.content.networkId : undefined;
   const network = networkId ? networks[networkId] : undefined;
@@ -37,6 +42,9 @@ export const SceneRenderer: React.FC<{entry: SceneTimelineEntry; networks: Reado
     <CameraDrift durationFrames={entry.spec.durationInFrames} move={entry.spec.intent?.camera ?? 'parallax'} amount={0.18}>
       <AbsoluteFill style={{transform: visualStrategy ? layoutTransforms[visualStrategy.layoutVariant] : undefined, transformOrigin: '50% 50%'}}>
         {scene}
+        {hybridSceneAssets?.[entry.spec.id]?.length ? <HybridAssetLayer assets={hybridSceneAssets[entry.spec.id]} durationInFrames={entry.spec.durationInFrames} /> : null}
+        {resolvedHybridAssets?.[entry.spec.id]?.length ? <HybridAssetLayer assets={resolvedHybridAssets[entry.spec.id]} durationInFrames={entry.spec.durationInFrames} signature={signatureScene} /> : null}
+        {hybridFallbacks?.[entry.spec.id]?.length ? <HybridFallbackLayer fallbacks={hybridFallbacks[entry.spec.id]} layout={hybridLayout} /> : null}
         {visualStrategy && <VisualStrategyOverlay spec={entry.spec} context={context} network={network} />}
         {entry.spec.subtitle && <Subtitle text={entry.spec.subtitle} start={Math.round(entry.spec.durationInFrames * 0.15)} end={Math.round(entry.spec.durationInFrames * 0.86)} background="busy" />}
       </AbsoluteFill>

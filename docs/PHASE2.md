@@ -87,3 +87,13 @@ human-review manifests. See [asset generation](RECRAFT_ASSET_GENERATION.md) and
 - [Recraft V4 Styles](https://www.recraft.ai/docs/api-reference/models/recraft-v4-styles)
 - [Style matching](https://www.recraft.ai/docs/api-reference/styles)
 - Detailed implementation notes: [RECRAFT_API_NOTES.md](RECRAFT_API_NOTES.md).
+
+## Task V2-04: Hybrid Scene Composer
+
+The composer combines Episode, VisualPlan, AssetPlan, the local generated asset
+manifest, and explicit local asset-review decisions. Missing review decisions are
+pending; pending assets fall back by default; rejected assets are never composited.
+An explicit `--allow-pending-assets` render is marked `DRAFT — UNREVIEWED ASSETS`.
+Rendering reuses saved Task007/Task V2 artifacts and does not repeat research or call
+providers. Phase 1 rendering and Factory v1 remain independent of Recraft. See
+[composer notes](RECRAFT_HYBRID_COMPOSER.md) and [Task V2-04](tasks/PHASE2_TASK_004.md).

@@ -4,14 +4,18 @@ import {bundle} from '@remotion/bundler';
 import {renderMedia, renderStill, selectComposition} from '@remotion/renderer';
 import {loadEpisode} from '../../src/episode/loadEpisode';
 import type {ResolvedVisualStrategy} from '../../src/factory/renderStrategy';
+import type {HybridSceneAsset} from '../../src/assets/hybridComposer';
+import type {ResolvedHybridAsset} from '../../src/composition/assetResolver';
+import type {HybridSceneFallback,HybridLayout} from '../../src/composition/hybridTypes';
 
-export type RenderEpisodeOptions = {outputLocation?: string; visualStrategies?: Record<string, ResolvedVisualStrategy>; onProgress?: (progress: number) => void; quiet?: boolean};
+export type HybridRenderProps={resolvedHybridAssets?:Record<string,readonly ResolvedHybridAsset[]>;hybridFallbacks?:Record<string,readonly HybridSceneFallback[]>;hybridLayouts?:Record<string,HybridLayout>;signatureSceneIds?:readonly string[]};
+export type RenderEpisodeOptions = {outputLocation?: string; visualStrategies?: Record<string, ResolvedVisualStrategy>; hybridSceneAssets?: Record<string, readonly HybridSceneAsset[]>; onProgress?: (progress: number) => void; quiet?: boolean}&HybridRenderProps;
 
 export async function renderEpisode(file: string, options: RenderEpisodeOptions = {}): Promise<string> {
   const episode = await loadEpisode(file);
   await mkdir('output', {recursive: true});
   const outputLocation = path.resolve(options.outputLocation ?? path.join('output', `${path.basename(file, path.extname(file))}.mp4`));
-  const inputProps = {episode, visualStrategies: options.visualStrategies};
+  const inputProps = {episode, visualStrategies: options.visualStrategies, hybridSceneAssets: options.hybridSceneAssets,resolvedHybridAssets:options.resolvedHybridAssets,hybridFallbacks:options.hybridFallbacks,hybridLayouts:options.hybridLayouts,signatureSceneIds:options.signatureSceneIds};
   if (!options.quiet) console.log(`Validated ${episode.title}: ${episode.durationInFrames} frames. Bundling...`);
   const serveUrl = await bundle({entryPoint: path.resolve('src/index.ts')});
   const composition = await selectComposition({serveUrl, id: 'EpisodeVideo', inputProps});
@@ -37,10 +41,11 @@ export async function renderEpisodeStillFrames(input: {
   outputDirectory: string;
   frames: readonly number[];
   visualStrategies?: Record<string, ResolvedVisualStrategy>;
+  hybridProps?:HybridRenderProps;
 }): Promise<string[]> {
   const episode = await loadEpisode(input.file);
   await mkdir(input.outputDirectory, {recursive: true});
-  const inputProps = {episode, visualStrategies: input.visualStrategies};
+  const inputProps = {episode, visualStrategies: input.visualStrategies,...input.hybridProps};
   const serveUrl = await bundle({entryPoint: path.resolve('src/index.ts')});
   const composition = await selectComposition({serveUrl, id: 'EpisodeVideo', inputProps});
   const uniqueFrames = [...new Set(input.frames.map((frame) => Math.max(0, Math.min(composition.durationInFrames - 1, Math.round(frame)))))];

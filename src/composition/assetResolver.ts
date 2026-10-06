@@ -1,0 +1,36 @@
+import {createHash} from 'node:crypto';
+import {access,copyFile,mkdir,readFile,rm} from 'node:fs/promises';
+import path from 'node:path';
+import type {AssetPlan} from '../assets/assetStrategySchema';
+import type {AssetGenerationManifest} from '../assets/generation/assetGenerationSchema';
+import type {Episode} from '../episode/schema';
+import type {VisualPlan} from '../visual/schemas';
+import {AssetReviewStateSchema,type AssetReviewDecision,type AssetReviewState,type HybridLayout,type HybridSceneFallback,type HybridStagedAsset} from './hybridTypes';
+import {inspectPng} from '../assets/generation/assetValidator';
+
+export type ResolvedHybridAsset={assetId:string;reuseKey:string;assetKind:string;publicPath:string;hasAlpha:boolean;semanticRisk:'low'|'medium'|'high';sha256:string;layout:HybridLayout};
+export type AssetResolution={sceneAssets:Record<string,ResolvedHybridAsset[]>;fallbacks:HybridSceneFallback[];stagedAssets:HybridStagedAsset[];reviewState:AssetReviewState;counts:{approved:number;pending:number;rejected:number};warnings:string[]};
+const safeId=(value:string)=>{if(!/^[a-z0-9][a-z0-9-]{1,79}$/.test(value))throw new Error(`Unsafe asset or episode id: ${value}`);return value;};
+const inside=(root:string,target:string)=>{const rel=path.relative(root,target);if(rel==='..'||rel.startsWith(`..${path.sep}`)||path.isAbsolute(rel))throw new Error('Asset path escapes the project workspace.');};
+const digest=(value:Uint8Array)=>createHash('sha256').update(value).digest('hex');
+const embeddedTextRisk=(warnings:string[])=>warnings.find((warning)=>/(embedded\s+(?:text|numeral|number)|(?:visible|prominent).*?(?:text|numeral|number)|unwanted\s+(?:text|number))/i.test(warning));
+
+export async function readAssetReviewState(file:string,episodeId:string,assetIds:string[]):Promise<AssetReviewState>{
+  try {const parsed=AssetReviewStateSchema.parse(JSON.parse(await readFile(file,'utf8')));if(parsed.episodeId!==episodeId)throw new Error('Asset review state episodeId does not match.');for(const item of parsed.assets)if(!assetIds.includes(item.assetId))throw new Error(`Asset review state references unknown asset ${item.assetId}.`);return parsed;}
+  catch(error){if((error as NodeJS.ErrnoException).code==='ENOENT')return{episodeId,assets:[]};throw new Error(`Invalid asset review state: ${error instanceof Error?error.message:'unknown error'}`);}
+}
+
+export async function resolveAndStageAssets(input:{root:string;episode:Episode;visualPlan:VisualPlan;assetPlan:AssetPlan;manifest:AssetGenerationManifest;reviewFile:string;allowPendingAssets:boolean;layouts:Record<string,HybridLayout>}):Promise<AssetResolution>{
+  const {root,episode,assetPlan,manifest,allowPendingAssets,layouts}=input;safeId(episode.id);const ids=manifest.assets.map((a)=>a.id);const reviewState=await readAssetReviewState(input.reviewFile,episode.id,ids);const decisions=new Map<string,AssetReviewDecision>(reviewState.assets.map((item)=>[item.assetId,item.decision]));
+  const counts={approved:0,pending:0,rejected:0};for(const id of new Set(ids))counts[decisions.get(id)??'pending']++;
+  const stageRoot=path.resolve(root,'public','generated-assets',episode.id);inside(path.resolve(root,'public','generated-assets'),stageRoot);await mkdir(stageRoot,{recursive:true});
+  const byReuse=new Map(manifest.assets.map((asset)=>[asset.reuseKey,asset]));const sceneAssets:Record<string,ResolvedHybridAsset[]>={};const fallbacks:HybridSceneFallback[]=[];const stagedAssets:HybridStagedAsset[]=[];const stagedByAsset=new Map<string,ResolvedHybridAsset>();const warnings:string[]=[];
+  for(const scene of assetPlan.scenePlans){for(const planned of scene.recraftAssets){const generated=byReuse.get(planned.reuseKey);if(!generated){fallbacks.push({assetId:planned.assetId,assetKind:planned.assetKind,decision:'pending',sceneId:scene.sceneId,fallbackKind:planned.assetKind==='character'?'agent-token':'procedural',reason:'No matching generated asset exists in the manifest.'});warnings.push(`${scene.sceneId}: missing asset ${planned.assetId}; procedural fallback used.`);continue;}
+      const decision=decisions.get(generated.id)??'pending';const fallback=(reason:string)=>{fallbacks.push({assetId:generated.id,assetKind:generated.assetKind,decision,sceneId:scene.sceneId,fallbackKind:generated.assetKind==='character'?'agent-token':'procedural',reason});};
+      if(decision==='rejected'){fallback('Asset was explicitly rejected by local review.');continue;}if(decision==='pending'&&!allowPendingAssets){fallback('Asset is pending human review; use --allow-pending-assets only for a draft render.');continue;}if(generated.semanticRisk==='high'){fallback('High semantic-risk assets are not eligible for composition.');continue;}const textRisk=embeddedTextRisk(generated.warnings);if(textRisk){fallback(`Manifest warns of embedded text: ${textRisk}`);continue;}
+      let binding=stagedByAsset.get(generated.id);if(!binding){const source=path.resolve(root,generated.filePath);let bytes:Buffer;let sha:string;let hasAlpha:boolean;try{inside(path.resolve(root),source);await access(source);bytes=await readFile(source);hasAlpha=inspectPng(bytes).hasAlpha;sha=digest(bytes);}catch(error){const reason=`Source asset is missing or invalid (${error instanceof Error?error.message:'invalid image'}). Procedural fallback used.`;fallback(reason);warnings.push(`${scene.sceneId}/${generated.id}: ${reason}`);continue;}if(sha.length!==64)throw new Error('Unable to verify source asset hash.');if(hasAlpha!==generated.hasAlpha)warnings.push(`${scene.sceneId}/${generated.id}: manifest alpha metadata differed from PNG; verified file metadata is used.`);const filename=`${safeId(generated.id)}-${sha.slice(0,12)}.png`;const target=path.join(stageRoot,filename);await mkdir(stageRoot,{recursive:true});try{await copyFile(source,target);const copied=await readFile(target);const copiedHash=digest(copied);if(copiedHash!==sha)throw new Error(`Staged asset hash verification failed for ${generated.id}.`);}catch(error){await rm(target,{force:true});throw error;}const publicPath=`generated-assets/${episode.id}/${filename}`;binding={assetId:generated.id,reuseKey:generated.reuseKey,assetKind:generated.assetKind,publicPath,hasAlpha,semanticRisk:generated.semanticRisk,sha256:sha,layout:layouts[scene.sceneId]};stagedByAsset.set(generated.id,binding);stagedAssets.push({assetId:generated.id,reuseKey:generated.reuseKey,publicPath,sha256:sha,hasAlpha,assetKind:generated.assetKind,semanticRisk:generated.semanticRisk});}
+      if(!binding.hasAlpha)warnings.push(`${generated.id}: opaque generated background may leave a visible matte on dark scenes; inspect QA stills before approval.`);const sceneBinding={...binding,layout:layouts[scene.sceneId]};(sceneAssets[scene.sceneId]??=[]).push(sceneBinding);
+    }}
+  if(counts.pending&&allowPendingAssets)warnings.push('Draft render includes one or more pending, unreviewed assets.');if(fallbacks.some((item)=>item.decision==='rejected'))warnings.push('Rejected assets were excluded and rendered with procedural fallbacks.');if(!stagedAssets.length)warnings.push('No reviewed or draft-allowed Recraft assets were staged; the result is fully procedural.');
+  return{sceneAssets,fallbacks,stagedAssets,reviewState,counts,warnings:[...new Set(warnings)]};
+}

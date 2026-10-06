@@ -135,3 +135,14 @@ npm run generate:assets -- --plan generated/paradox-of-choice/asset-plan.json
 
 See [Recraft Asset Generation](docs/RECRAFT_ASSET_GENERATION.md) for retry, reuse,
 high-risk, report, and human-review behavior.
+
+### Phase 2 Task V2-04 — Hybrid Scene Composer
+
+The hybrid composer consumes existing Episode, VisualPlan, AssetPlan, Recraft manifest,
+and local asset-review state, then combines approved local illustrations with Remotion
+information layers into an MP4. Pending assets fall back by default; `--allow-pending-assets`
+creates a visibly marked draft and never bypasses rejection. Start with
+`npm run review:asset -- --episode <id> --asset <id> --approve|--reject|--pending`, then
+run `npm run render:hybrid -- --episode <path> --visual-plan <path> --asset-plan <path> --manifest <path>`.
+It does not rerun research or image generation. See
+[Hybrid Scene Composer](docs/RECRAFT_HYBRID_COMPOSER.md).
